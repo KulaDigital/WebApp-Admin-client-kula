@@ -146,3 +146,6 @@ h1 {
   scrollbar-color: #FFF #0A2540;
   /* thumb color then track color */
 }
+
+body { color: var(--color-text-primary); background: var(--color-bg-light); }
+html.dark body { color: var(--color-text-light); background: var(--color-bg-dark); }
