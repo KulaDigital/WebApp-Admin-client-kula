@@ -1,8 +1,12 @@
-// pages/Clients.tsx
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import type { Client } from '../../types';
+import axiosInstance from '../../utils/instance';
+import Drawer from '../../components/Drawer';
+import Button from '../../components/Button';
 
 const Clients: React.FC = () => {
+  const [isOpen, setIsOpen] = useState(false);
+
   const clients: Client[] = [
     { name: 'Acme Corporation', email: 'contact@acme.com', plan: 'Enterprise', chatbots: 12, mrr: '$499', status: 'Active' },
     { name: 'TechStart Inc', email: 'hello@techstart.io', plan: 'Professional', chatbots: 8, mrr: '$199', status: 'Active' },
@@ -28,16 +32,28 @@ const Clients: React.FC = () => {
     return classes[status] || 'bg-gray-100 text-gray-700';
   };
 
+  useEffect(() => {
+    let response = axiosInstance.get('');
+  }, []);
+
+  const handleAddClient = () => {
+    setIsOpen(true);
+  };
+
   return (
     <div className="bg-bg-light min-h-screen">
       {/* Page Header */}
-      <div className="mb-8">
-        <h1>
-          Client Management
-        </h1>
-        <p className="text-text-secondary font-body">
-          Manage all your clients and their subscriptions
-        </p>
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1>
+            Client Management
+          </h1>
+          <p className="text-text-secondary font-body">
+            Manage all your clients and their subscriptions
+          </p>
+        </div>
+
+        <div className='p-2 bg-[#000] rounded-md text-white' onClick={handleAddClient}>ADD CLIENT</div>
       </div>
 
       {/* Clients Table Card */}
@@ -109,6 +125,18 @@ const Clients: React.FC = () => {
             </tbody>
           </table>
         </div>
+        <Drawer open={isOpen} close={() => setIsOpen(false)}>
+          <div className='flex justify-between items-center p-2 border-b-1'>
+            <div>Add Client</div>
+            <div className='flex gap-3'>
+              <Button label={'Save'} />
+              <Button label={'Cancel'} onClick={() => setIsOpen(false)} />
+            </div>
+          </div>
+          <div>
+            <div>Client Info</div>
+          </div>
+        </Drawer>
       </div>
     </div>
   );

@@ -8,6 +8,6 @@ interface buttonProps {
 export default function Button({ color, onClick, label }: buttonProps) {
 
     return (
-        <button color={color} label={label} onClick={onClick} />
+        <button color={color} onClick={onClick}>{label}</button>
     )
 }
