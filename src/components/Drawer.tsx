@@ -7,29 +7,26 @@ interface CommonDrawerProps {
     close: () => void;
     placement?: 'left' | 'right' | 'top' | 'bottom';
     height?: string;
-    width?: string;
-    extra: any;
 }
 
-export default function CommonDrawer({ open, close, children, extra, placement = 'right',
-    height = '85vh',
-    width = '85vw', }: CommonDrawerProps) {
+export default function CommonDrawer({ open, close, children, placement = 'right',
+}: CommonDrawerProps) {
 
 
     return (
-        <Drawer open={open} onClose={close} width={width}
-            height={height}
-            extra={extra}
+        <Drawer open={open} onClose={close}
             anchor={placement}
-            styles={{
-                body: {
-                    padding: '20px 50px',
+            PaperProps={{
+                sx: {
+                    width: placement === 'left' || placement === 'right' ? '85vw' : '100%',
+                    padding: '20px 50px 0px 50px',
                     transition: 'all 0.9s cubic-bezier(0.4, 0, 0.2, 1)',
-                    overflow: 'visible',
                 },
-                mask: {
+            }}
+            sx={{
+                '& .MuiBackdrop-root': {
                     transition: 'all 0.9s cubic-bezier(0.4, 0, 0.2, 1)',
-                }
+                },
             }}>
             {children}
 

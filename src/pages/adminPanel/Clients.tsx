@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import type { Client } from '../../types';
 import axiosInstance from '../../utils/instance';
 import Drawer from '../../components/Drawer';
-import Button from '../../components/Button';
+import AddClient from './AddClient';
 
 const Clients: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -125,17 +125,11 @@ const Clients: React.FC = () => {
             </tbody>
           </table>
         </div>
-        <Drawer open={isOpen} close={() => setIsOpen(false)}>
-          <div className='flex justify-between items-center p-2 border-b-1'>
-            <div>Add Client</div>
-            <div className='flex gap-3'>
-              <Button label={'Save'} />
-              <Button label={'Cancel'} onClick={() => setIsOpen(false)} />
-            </div>
-          </div>
-          <div>
-            <div>Client Info</div>
-          </div>
+        <Drawer open={isOpen} close={() => setIsOpen(false)} width='85vw' >
+
+
+          <AddClient close={() => setIsOpen(false)} />
+
         </Drawer>
       </div>
     </div>
