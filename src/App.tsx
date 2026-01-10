@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import AdminLayout from "./layout/adminLayout/Layout";
+import ClientLayout from "./layout/clientLayout/clientLayout";
 
 import Dashboard from "./pages/adminPanel/Dashboard";
 import Analytics from "./pages/adminPanel/Analytics";
@@ -15,7 +16,7 @@ const App = () => {
   return (
     <Routes>
       {/* Admin Layout */}
-      <Route path="/" element={<AdminLayout />}>
+      <Route path="/" element={<ClientLayout />}>
         <Route index element={<Navigate to="dashboard" replace />} />
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="analytics" element={<Analytics />} />
