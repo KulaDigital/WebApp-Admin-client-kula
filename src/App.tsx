@@ -1,6 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import AdminLayout from "./layout/adminLayout/Layout";
-import ClientLayout from "./layout/clientLayout/clientLayout";
 
 import Dashboard from "./pages/adminPanel/Dashboard";
 import Analytics from "./pages/adminPanel/Analytics";
@@ -11,12 +10,17 @@ import Usage from "./pages/adminPanel/Usage";
 import Integrations from "./pages/adminPanel/Intergrations";
 import Settings from "./pages/adminPanel/Settings";
 import Security from "./pages/adminPanel/Security";
+import Login from "./login/Login";
 
 const App = () => {
   return (
     <Routes>
+      <Route path="/">
+        <Route index element={<Login />} />
+      </Route>
+
       {/* Admin Layout */}
-      <Route path="/" element={<ClientLayout />}>
+      <Route path="/SA" element={<AdminLayout />}>
         <Route index element={<Navigate to="dashboard" replace />} />
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="analytics" element={<Analytics />} />

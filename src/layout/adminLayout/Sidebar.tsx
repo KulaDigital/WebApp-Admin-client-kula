@@ -17,16 +17,16 @@ const navSections: NavSection[] = [
     {
         title: "MAIN",
         items: [
-            { label: "Dashboard", path: "/dashboard" },
-            { label: "Analytics", path: "/analytics" },
+            { label: "Dashboard", path: "/SA/dashboard" },
+            { label: "Analytics", path: "/SA/analytics" },
         ],
     },
     {
         title: "MANAGEMENT",
         items: [
-            { label: "Clients", path: "/clients" },
-            { label: "Chatbots", path: "/chatbots" },
-            { label: "Subscriptions", path: "/subscriptions" },
+            { label: "Clients", path: "/SA/clients" },
+            { label: "Chatbots", path: "/SA/chatbots" },
+            { label: "Subscriptions", path: "/SA/subscriptions" },
             { label: "Billing & Revenue", path: "/usage" },
             { label: "Usage", path: "/usage" },
         ],
@@ -67,7 +67,7 @@ const Sidebar: React.FC = () => {
                     </div>
                     <div>
                         <div className="text-xl font-extrabold text-white font-heading">
-                            Greeto AI
+                            Kula Chat AI
                         </div>
                     </div>
                 </div>

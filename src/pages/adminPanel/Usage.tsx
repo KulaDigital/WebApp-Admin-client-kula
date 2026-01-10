@@ -18,7 +18,7 @@ const Usage: React.FC = () => {
   ];
 
   return (
-    <div className="p-10 bg-bg-light min-h-screen">
+    <div className="bg-bg-light min-h-screen">
       <div className="mb-8">
         <h1>
           Usage & Billing

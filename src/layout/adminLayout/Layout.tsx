@@ -4,12 +4,12 @@ import { Outlet } from "react-router-dom";
 
 const AdminLayout: React.FC = () => {
     return (
-        <div className="min-h-full bg-light">
+        <div className="min-h-full w-full bg-light">
             <Sidebar />
 
             <div className="ml-[280px] min-h-screen flex flex-col">
                 <TopBar />
-                <main className="bg-[#F6F9FC]">
+                <main className="bg-[#F6F9FC] px-7 py-4">
                     <Outlet />
                 </main>
             </div>

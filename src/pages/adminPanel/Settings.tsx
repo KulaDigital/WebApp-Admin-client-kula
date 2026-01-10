@@ -21,7 +21,7 @@ const Settings: React.FC = () => {
   };
 
   return (
-    <div className="p-10 bg-bg-light min-h-screen">
+    <div className="bg-bg-light min-h-screen">
       <div className="mb-8">
         <h1>Settings</h1>
         <p className="text-text-secondary font-body">Manage your platform settings and preferences</p>

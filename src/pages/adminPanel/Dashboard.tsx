@@ -19,7 +19,7 @@ const Dashboard: React.FC = () => {
   ];
 
   return (
-    <div className="p-10">
+    <div>
       {/* Page Header */}
       <div className="mb-6">
         <h1>
