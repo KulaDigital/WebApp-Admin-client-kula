@@ -1,7 +1,7 @@
 // components/Sidebar.tsx
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import GreetoIcon from "../../assets/Greeto Icon White.svg";
+import GreetoIcon from "../../assets/GreetoIconWhite.svg";
 
 interface MenuItem {
     label: string;
@@ -64,12 +64,12 @@ const Sidebar: React.FC = () => {
             <div className="px-6 py-8 border-b border-white/10">
                 <div className="flex items-center gap-3 mb-1">
                     <div className="w-10 h-10 bg-gradient-to-br from-[#635BFF] to-[#5448E0] rounded-lg flex items-center justify-center">
-  <img
-    src={GreetoIcon}
-    alt="Greeto"
-    className="w-6 h-6 object-contain"
-  />
-</div>
+                        <img
+                            src={GreetoIcon}
+                            alt="Greeto"
+                            className="w-6 h-6 object-contain"
+                        />
+                    </div>
                     <div>
                         <div className="text-xl font-extrabold text-white font-heading">
                             Greeto

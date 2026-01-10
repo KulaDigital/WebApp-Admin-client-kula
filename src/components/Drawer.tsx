@@ -8,6 +8,7 @@ interface CommonDrawerProps {
     placement?: 'left' | 'right' | 'top' | 'bottom';
     height?: string;
     width?: string;
+    extra: any;
 }
 
 export default function CommonDrawer({ open, close, children, extra, placement = 'right',
