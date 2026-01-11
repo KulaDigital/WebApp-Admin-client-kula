@@ -61,21 +61,19 @@ export default function AddClient({ close }) {
 
             {/* COMPANY */}
             <Card title="Company Information">
-                <Input
-                    label="Company Name"
-                    required
-                    value={form.companyName}
-                    onChange={(v) => setForm({ ...form, companyName: v })}
-                />
-
-                <div className="grid md:grid-cols-2 gap-6">
+                <div className="grid md:grid-cols-3 gap-6">
+                    <Input
+                        label="Company Name"
+                        required
+                        value={form.companyName}
+                        onChange={(v) => setForm({ ...form, companyName: v })}
+                    />
                     <Input
                         label="Website"
                         required
                         value={form.website}
                         onChange={(v) => setForm({ ...form, website: v })}
                     />
-
                     <Select
                         label="Industry"
                         value={form.industry}
@@ -93,7 +91,7 @@ export default function AddClient({ close }) {
 
             {/* CONTACT */}
             <Card title="Primary Contact">
-                <div className="grid md:grid-cols-2 gap-6">
+                <div className="grid md:grid-cols-3 gap-6">
                     <Input
                         label="Contact Name"
                         required
@@ -107,14 +105,13 @@ export default function AddClient({ close }) {
                         value={form.email}
                         onChange={(v) => setForm({ ...form, email: v })}
                     />
+                    <Input
+                        label="Phone"
+                        required
+                        value={form.phone}
+                        onChange={(v) => setForm({ ...form, phone: v })}
+                    />
                 </div>
-
-                <Input
-                    label="Phone"
-                    required
-                    value={form.phone}
-                    onChange={(v) => setForm({ ...form, phone: v })}
-                />
             </Card>
 
             {/* PLAN */}
@@ -285,7 +282,7 @@ function Input({
             <input
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
-                className="w-full border rounded-lg p-3"
+                className="w-full border-[#635BFF] border-1 rounded-sm p-2"
             />
         </div>
     );
@@ -305,7 +302,7 @@ function Select({
             <select
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
-                className="w-full border rounded-lg p-3"
+                className="w-full border-[#635BFF] border-1 rounded-sm p-2"
             >
                 <option value="">Select</option>
                 {options.map((o: string) => (
