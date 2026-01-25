@@ -1,13 +1,21 @@
 
 interface buttonProps {
-    color: 'primary' | 'secondary';
+    color?: 'primary' | 'secondary';
     onClick: () => void;
     label: string;
+    disabled?: boolean;
 }
 
-export default function Button({ color, onClick, label }: buttonProps) {
+export default function Button({ color = 'primary', onClick, label, disabled = false }: buttonProps) {
 
     return (
-        <button color={color} onClick={onClick}>{label}</button>
+        <button 
+            color={color} 
+            onClick={onClick}
+            disabled={disabled}
+            className={disabled ? 'opacity-50 cursor-not-allowed' : ''}
+        >
+            {label}
+        </button>
     )
 }

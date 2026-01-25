@@ -4,12 +4,12 @@ export const sidebarMenu = [
         content: [
             {
                 label: "Dashboard",
-                path: "/",
+                path: "/SA/dashboard",
                 icon: "📊",
             },
             {
                 label: "Analytics",
-                path: "/analytics",
+                path: "/SA/analytics",
                 icon: "📈",
             },
         ],
@@ -19,24 +19,24 @@ export const sidebarMenu = [
         content: [
             {
                 label: "Clients",
-                path: "/clients",
+                path: "/SA/clients",
                 icon: "👥",
                 badge: "247",
             },
             {
                 label: "Chatbots",
-                path: "/chatbots",
+                path: "/SA/chatbots",
                 icon: "🤖",
                 badge: "1284",
             },
             {
                 label: "Subscriptions",
-                path: "/subscriptions",
+                path: "/SA/subscriptions",
                 icon: "💳",
             },
             {
                 label: "Billing",
-                path: "/billing",
+                path: "/SA/usage",
                 icon: "💰",
             },
         ],
@@ -46,18 +46,18 @@ export const sidebarMenu = [
         content: [
             {
                 label: "Support Tickets",
-                path: "/support",
+                path: "/SA/support",
                 icon: "💬",
                 badge: "12",
             },
             {
                 label: "Activity Logs",
-                path: "/logs",
+                path: "/SA/security",
                 icon: "📝",
             },
             {
                 label: "Settings",
-                path: "/settings",
+                path: "/SA/settings",
                 icon: "⚙️",
             },
         ],
