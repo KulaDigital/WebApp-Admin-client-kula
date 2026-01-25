@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 interface MenuItem {
     label: string;
@@ -16,29 +17,29 @@ const navSections: NavSection[] = [
     {
         title: "MAIN",
         items: [
-            { label: "Dashboard", path: "/dashboard" },
-            { label: "My Chatbot", path: "/dashboard" },
-            { label: "Chatbot Configuration", path: "/analytics" },
-            { label: "Conversations", path: "/analytics" },
-            { label: "Analytics", path: "/analytics" },
+            { label: "Dashboard", path: "/client/dashboard" },
+            { label: "My Chatbot", path: "/client/dashboard" },
+            { label: "Chatbot Configuration", path: "/client/analytics" },
+            { label: "Conversations", path: "/client/analytics" },
+            { label: "Analytics", path: "/client/analytics" },
         ],
     },
     {
         title: "SUPPORT",
         items: [
-            { label: "Tickets", path: "/clients" },
-            { label: "Active Logs", path: "/chatbots" },
-            { label: "User Feedback", path: "/subscriptions" },
+            { label: "Tickets", path: "/client/settings" },
+            { label: "Active Logs", path: "/client/security" },
+            { label: "User Feedback", path: "/client/integrations" },
         ],
     },
     {
         title: "SYSTEM",
         items: [
 
-            { label: "Settings", path: "/settings" },
-            { label: "API Management", path: "/integrations" },
-            { label: "Integrations", path: "/integrations" },
-            { label: "Security", path: "/security" },
+            { label: "Settings", path: "/client/settings" },
+            { label: "API Management", path: "/client/integrations" },
+            { label: "Integrations", path: "/client/integrations" },
+            { label: "Security", path: "/client/security" },
         ],
     },
 ];
@@ -46,6 +47,7 @@ const navSections: NavSection[] = [
 export default function ClientSidebar() {
     const navigate = useNavigate();
     const location = useLocation();
+    const { userRole } = useAuth();
 
     const isActive = (path: string) => location.pathname === path;
 
@@ -113,11 +115,11 @@ export default function ClientSidebar() {
             <div className="px-5 py-5 border-t border-white/10">
                 <div className="flex items-center gap-3 cursor-pointer">
                     <div className="w-10 h-10 rounded-lg bg-[#635BFF] flex items-center justify-center text-white font-bold text-base">
-                        SA
+                        {userRole?.userName?.charAt(0).toUpperCase() || 'U'}
                     </div>
                     <div className="flex-1">
-                        <div className="font-semibold text-sm text-white">Super Admin</div>
-                        <div className="text-xs text-[#E3E8EF] opacity-70">Administrator</div>
+                        <div className="font-semibold text-sm text-white">{userRole?.userName || 'User'}</div>
+                        <div className="text-xs text-[#E3E8EF] opacity-70">{userRole?.role === 'super_admin' ? 'Administrator' : 'Client User'}</div>
                     </div>
                 </div>
             </div>

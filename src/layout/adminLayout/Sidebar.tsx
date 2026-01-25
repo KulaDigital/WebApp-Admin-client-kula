@@ -1,6 +1,7 @@
 // components/Sidebar.tsx
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import GreetoIcon from "../../assets/GreetoIconWhite.svg";
 
 interface MenuItem {
@@ -55,6 +56,7 @@ const navSections: NavSection[] = [
 const Sidebar: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const { userRole } = useAuth();
 
     const isActive = (path: string) => location.pathname === path;
 
@@ -126,11 +128,11 @@ const Sidebar: React.FC = () => {
             <div className="px-5 py-5 border-t border-white/10">
                 <div className="flex items-center gap-3 cursor-pointer">
                     <div className="w-10 h-10 rounded-lg bg-[#635BFF] flex items-center justify-center text-white font-bold text-base">
-                        SA
+                        {userRole?.userName?.charAt(0).toUpperCase() || 'U'}
                     </div>
                     <div className="flex-1">
-                        <div className="font-semibold text-sm text-white">Super Admin</div>
-                        <div className="text-xs text-[#E3E8EF] opacity-70">Administrator</div>
+                        <div className="font-semibold text-sm text-white">{userRole?.userName || 'User'}</div>
+                        <div className="text-xs text-[#E3E8EF] opacity-70">{userRole?.role === 'super_admin' ? 'Administrator' : 'Client User'}</div>
                     </div>
                 </div>
             </div>

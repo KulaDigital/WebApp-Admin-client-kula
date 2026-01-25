@@ -5,6 +5,14 @@ export type BadgeVariant = 'success' | 'warning' | 'error' | 'info' | 'primary' 
 export type ChangeType = 'positive' | 'negative';
 export type IconColor = 'blue' | 'purple' | 'green' | 'orange' | 'red';
 
+// Auth Types
+export type UserRole = 'super_admin' | 'client';
+
+export interface UserRoleInfo {
+  role: UserRole;
+  clientId?: number | string;
+}
+
 // Stat Card Props
 export interface StatCardProps {
   icon: string;
