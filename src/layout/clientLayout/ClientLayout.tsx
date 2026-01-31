@@ -9,7 +9,7 @@ const AdminLayout: React.FC = () => {
 
             <div className="ml-[280px] min-h-screen flex flex-col">
                 <ClientHeder />
-                <main className="bg-[#F6F9FC]">
+                <main className="bg-[var(--color-bg-light)]\">
                     <Outlet />
                 </main>
             </div>

@@ -19,7 +19,7 @@ const Security: React.FC = () => {
 
       {/* Security Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white border border-[#E2E8F0] rounded-lg p-6">
+        <div className="bg-white border border-[var(--color-border)] rounded-lg p-6">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-12 h-12 bg-green-50 text-green-500 rounded-md flex items-center justify-center text-2xl">✓</div>
             <div>
@@ -29,7 +29,7 @@ const Security: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white border border-[#E2E8F0] rounded-lg p-6">
+        <div className="bg-white border border-[var(--color-border)] rounded-lg p-6">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-12 h-12 bg-red-50 text-red-500 rounded-md flex items-center justify-center text-2xl">✗</div>
             <div>
@@ -39,7 +39,7 @@ const Security: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white border border-[#E2E8F0] rounded-lg p-6">
+        <div className="bg-white border border-[var(--color-border)] rounded-lg p-6">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-12 h-12 bg-blue-50 text-blue-500 rounded-md flex items-center justify-center text-2xl">🔑</div>
             <div>
@@ -53,7 +53,7 @@ const Security: React.FC = () => {
       {/* Security Settings */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Two-Factor Authentication */}
-        <div className="bg-white border border-[#E2E8F0] rounded-lg p-6">
+        <div className="bg-white border border-[var(--color-border)] rounded-lg p-6">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="text-xl font-bold text-text-primary font-heading mb-1">Two-Factor Authentication</h3>
@@ -63,13 +63,13 @@ const Security: React.FC = () => {
               Enabled
             </span>
           </div>
-          <button className="w-full px-4 py-2 text-sm font-medium text-text-secondary border border-[#E2E8F0] rounded-md hover:bg-bg-light transition-colors">
+          <button className="w-full px-4 py-2 text-sm font-medium text-text-secondary border border-[var(--color-border)] rounded-md hover:bg-bg-light transition-colors">
             Configure 2FA
           </button>
         </div>
 
         {/* Session Management */}
-        <div className="bg-white border border-[#E2E8F0] rounded-lg p-6">
+        <div className="bg-white border border-[var(--color-border)] rounded-lg p-6">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="text-xl font-bold text-text-primary font-heading mb-1">Active Sessions</h3>
@@ -83,10 +83,10 @@ const Security: React.FC = () => {
       </div>
 
       {/* Security Logs */}
-      <div className="bg-white border border-[#E2E8F0] rounded-lg overflow-hidden">
-        <div className="px-6 py-4 border-b border-[#E2E8F0] flex items-center justify-between">
+      <div className="bg-white border border-[var(--color-border)] rounded-lg overflow-hidden">
+        <div className="px-6 py-4 border-b border-[var(--color-border)] flex items-center justify-between">
           <h3 className="text-xl font-bold text-text-primary font-heading">Security Activity Log</h3>
-          <button className="px-4 py-2 text-sm font-medium text-text-secondary border border-[#E2E8F0] rounded-md hover:bg-bg-light transition-colors">
+          <button className="px-4 py-2 text-sm font-medium text-text-secondary border border-[var(--color-border)] rounded-md hover:bg-bg-light transition-colors">
             Export Log
           </button>
         </div>
@@ -94,7 +94,7 @@ const Security: React.FC = () => {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-bg-light border-b border-[#E2E8F0]">
+              <tr className="bg-bg-light border-b border-[var(--color-border)]">
                 <th className="px-6 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">Action</th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">User</th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">IP Address</th>
@@ -103,7 +103,7 @@ const Security: React.FC = () => {
                 <th className="px-6 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#E2E8F0]">
+            <tbody className="divide-y divide-[var(--color-border)]">
               {securityLogs.map((log, index) => (
                 <tr key={index} className="hover:bg-bg-light transition-colors">
                   <td className="px-6 py-4"><span className="font-semibold text-text-primary">{log.action}</span></td>

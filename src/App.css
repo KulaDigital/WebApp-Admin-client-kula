@@ -11,6 +11,10 @@
   --color-primary: #635BFF;
   --color-primary-hover: #5448E0;
   --color-primary-light: rgba(99, 91, 255, 0.1);
+  --color-primary-hover-light: #6b63ff;
+  --color-primary-hover-dark: #5f54f0;
+  /* Secondary Colors */
+  --color-secondary: #0A2540;
   /* Background Colors */
   --color-bg-dark: #0A2540;
   --color-bg-light: #F6F9FC;
@@ -143,7 +147,7 @@ h1 {
 * {
   scrollbar-width: thin;
   /* Optional: thinner scrollbar */
-  scrollbar-color: #FFF #0A2540;
+  scrollbar-color: #FFF var(--color-secondary);
   /* thumb color then track color */
 }
 

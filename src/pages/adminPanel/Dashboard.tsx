@@ -38,13 +38,13 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Recent Activity Card */}
-      <div className="bg-white border border-[#E2E8F0] rounded-lg overflow-hidden">
+      <div className="bg-white border border-[var(--color-border)] rounded-lg overflow-hidden">
         {/* Card Header */}
-        <div className="px-6 py-4 border-b border-[#E2E8F0] flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-[var(--color-border)] flex items-center justify-between">
           <h3 className="text-xl font-bold text-text-primary font-heading">
             Recent Client Activity
           </h3>
-          <button className="px-4 py-2 text-sm font-medium text-text-secondary border border-[#E2E8F0] rounded-md hover:bg-bg-light transition-colors">
+          <button className="px-4 py-2 text-sm font-medium text-text-secondary border border-[var(--color-border)] rounded-md hover:bg-bg-light transition-colors">
             View All
           </button>
         </div>
@@ -53,7 +53,7 @@ const Dashboard: React.FC = () => {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-bg-light border-b border-[#E2E8F0]">
+              <tr className="bg-bg-light border-b border-[var(--color-border)]">
                 <th className="px-6 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
                   Client Name
                 </th>
@@ -71,7 +71,7 @@ const Dashboard: React.FC = () => {
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#E2E8F0]">
+            <tbody className="divide-y divide-[var(--color-border)]">
               {recentActivity.map((activity, index) => (
                 <tr key={index} className="hover:bg-bg-light transition-colors">
                   <td className="px-6 py-4">

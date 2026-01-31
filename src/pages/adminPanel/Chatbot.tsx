@@ -37,9 +37,9 @@ const Chatbots: React.FC = () => {
       </div>
 
       {/* Chatbots Table Card */}
-      <div className="bg-white border border-[#E2E8F0] rounded-lg overflow-hidden">
+      <div className="bg-white border border-[var(--color-border)] rounded-lg overflow-hidden">
         {/* Card Header */}
-        <div className="px-6 py-4 border-b border-[#E2E8F0]">
+        <div className="px-6 py-4 border-b border-[var(--color-border)]">
           <h3 className="text-xl font-bold text-text-primary font-heading">
             All Chatbots
           </h3>
@@ -49,7 +49,7 @@ const Chatbots: React.FC = () => {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-bg-light border-b border-[#E2E8F0]">
+              <tr className="bg-bg-light border-b border-[var(--color-border)]">
                 <th className="px-6 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
                   Chatbot Name
                 </th>
@@ -70,7 +70,7 @@ const Chatbots: React.FC = () => {
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#E2E8F0]">
+            <tbody className="divide-y divide-[var(--color-border)]">
               {chatbots.map((bot, index) => (
                 <tr key={index} className="hover:bg-bg-light transition-colors">
                   <td className="px-6 py-4">
@@ -85,7 +85,7 @@ const Chatbots: React.FC = () => {
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    <button className="px-3 py-1.5 text-xs font-medium text-text-secondary border border-[#E2E8F0] rounded-md hover:bg-bg-light transition-colors">
+                    <button className="px-3 py-1.5 text-xs font-medium text-text-secondary border border-[var(--color-border)] rounded-md hover:bg-bg-light transition-colors">
                       Manage
                     </button>
                   </td>

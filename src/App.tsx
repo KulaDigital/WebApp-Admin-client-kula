@@ -7,6 +7,7 @@ import { AuthProvider } from "./context/AuthContext";
 import Dashboard from "./pages/adminPanel/Dashboard";
 import Analytics from "./pages/adminPanel/Analytics";
 import Clients from "./pages/adminPanel/Clients";
+import Users from "./pages/adminPanel/Users";
 import Chatbots from "./pages/adminPanel/Chatbot";
 import Subscriptions from "./pages/adminPanel/Subscription";
 import Usage from "./pages/adminPanel/Usage";
@@ -44,6 +45,7 @@ const App = () => {
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="analytics" element={<Analytics />} />
+          <Route path="users" element={<Users />} />
           <Route path="clients" element={<Clients />} />
           <Route path="chatbots" element={<Chatbots />} />
           <Route path="subscriptions" element={<Subscriptions />} />

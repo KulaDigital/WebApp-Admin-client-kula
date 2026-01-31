@@ -1,43 +1,392 @@
 import React, { useEffect, useState } from 'react';
-import type { Client } from '../../types';
 import axiosInstance from '../../utils/instance';
 import Drawer from '../../components/Drawer';
 import AddClient from './AddClient';
+import Button from '../../components/Button';
+import ViewModal from '../../components/ViewModal';
+import EditModal from '../../components/EditModal';
+import DeleteModal from '../../components/DeleteModal';
+
+interface ClientData {
+  id: number;
+  company_name: string;
+  website_url: string;
+  status: string;
+  created_at: string;
+  api_key?: string;
+  widget_config?: any;
+  primaryColor?: string;
+  secondaryColor?: string;
+  embed_script?: string;
+}
 
 const Clients: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [clients, setClients] = useState<ClientData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<'active' | 'inactive'>('active');
+  
+  // Modal states
+  const [viewModal, setViewModal] = useState(false);
+  const [editModal, setEditModal] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<ClientData | null>(null);
+  const [editFormData, setEditFormData] = useState<Partial<ClientData>>({});
+  const [editLoading, setEditLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
-  const clients: Client[] = [
-    { name: 'Acme Corporation', email: 'contact@acme.com', plan: 'Enterprise', chatbots: 12, mrr: '$499', status: 'Active' },
-    { name: 'TechStart Inc', email: 'hello@techstart.io', plan: 'Professional', chatbots: 8, mrr: '$199', status: 'Active' },
-    { name: 'Global Solutions', email: 'info@globalsolutions.com', plan: 'Enterprise', chatbots: 12, mrr: '$499', status: 'Active' },
-    { name: 'Digital Hub', email: 'team@digitalhub.net', plan: 'Business', chatbots: 5, mrr: '$299', status: 'Trial' },
-  ];
+  // Rescrape/Re-embed progress states
+  const [rescrapeProgress, setRescrapeProgress] = useState<{
+    isProcessing: boolean;
+    progress: number;
+    status: string;
+    error: string | null;
+    clientId: number | null;
+  }>({
+    isProcessing: false,
+    progress: 0,
+    status: '',
+    error: null,
+    clientId: null,
+  });
 
-  const getBadgeClass = (plan: string): string => {
-    const classes: Record<string, string> = {
-      'Enterprise': 'bg-purple-100 text-purple-700',
-      'Professional': 'bg-blue-100 text-blue-700',
-      'Business': 'bg-status-info/10 text-status-info',
-    };
-    return classes[plan] || 'bg-gray-100 text-gray-700';
-  };
-
-  const getStatusBadge = (status: string): string => {
-    const classes: Record<string, string> = {
-      'Active': 'bg-green-100 text-green-700',
-      'Trial': 'bg-yellow-100 text-yellow-700',
-      'Inactive': 'bg-red-100 text-red-700',
-    };
-    return classes[status] || 'bg-gray-100 text-gray-700';
+  const fetchClients = async (status: 'active' | 'inactive') => {
+    try {
+      setLoading(true);
+      const response = await axiosInstance.get(`/admin/clients/status/${status}`);
+      if (response.data.success) {
+        setClients(response.data.clients);
+      }
+      setError(null);
+    } catch (err) {
+      console.error('Error fetching clients:', err);
+      setError('Failed to fetch clients');
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    let response = axiosInstance.get('');
-  }, []);
+    fetchClients(statusFilter);
+  }, [statusFilter]);
+
+  const getStatusBadge = (status: string): string => {
+    const classes: Record<string, string> = {
+      'active': 'bg-green-100 text-green-700',
+      'inactive': 'bg-red-100 text-red-700',
+      'trial': 'bg-yellow-100 text-yellow-700',
+    };
+    return classes[status.toLowerCase()] || 'bg-gray-100 text-gray-700';
+  };
 
   const handleAddClient = () => {
     setIsOpen(true);
+  };
+
+  const handleClientAdded = () => {
+    setIsOpen(false);
+    fetchClients(statusFilter);
+  };
+
+  const handleViewClient = async (client: ClientData) => {
+    try {
+      // Fetch full client details including embed_script
+      const response = await axiosInstance.get(`/admin/clients/${client.id}`);
+      if (response.data.success) {
+        setSelectedClient({
+          ...client,
+          embed_script: response.data.client.embed_script
+        });
+      } else {
+        setSelectedClient(client);
+      }
+    } catch (err) {
+      console.error('Error fetching client details:', err);
+      setSelectedClient(client);
+    }
+    setViewModal(true);
+  };
+
+  const handleEditClient = (client: ClientData) => {
+    setSelectedClient(client);
+    setEditFormData(client);
+    setEditModal(true);
+  };
+
+  const handleDeleteClient = (client: ClientData) => {
+    setSelectedClient(client);
+    setDeleteModal(true);
+  };
+
+  const handleActivateClient = async (client: ClientData) => {
+    try {
+      const response = await axiosInstance.put(`/admin/clients/${client.id}`, {
+        status: 'active'
+      });
+
+      if (response.data.success) {
+        alert('Client activated successfully!');
+        setViewModal(false);
+        fetchClients(statusFilter);
+      }
+    } catch (err: any) {
+      console.error('Error activating client:', err);
+      alert(err.response?.data?.error || 'Failed to activate client');
+    }
+  };
+
+  const handleRescrapeAndReembed = async (client: ClientData) => {
+    try {
+      if (!confirm(`Are you sure you want to rescrape and re-embed content for ${client.company_name}? This may take a few minutes.`)) {
+        return;
+      }
+
+      // Close the modal immediately
+      setViewModal(false);
+
+      setRescrapeProgress({
+        isProcessing: true,
+        progress: 10,
+        status: 'Starting rescrape process...',
+        error: null,
+        clientId: client.id,
+      });
+
+      // First, rescrape the domain
+      const scrapeResponse = await axiosInstance.post(
+        "/scraper/crawl-domain",
+        { websiteUrl: client.website_url },
+        { headers: { "x-api-key": client.api_key } }
+      );
+
+      if (scrapeResponse.data.jobId) {
+        console.log('Domain rescrape started with jobId:', scrapeResponse.data.jobId);
+        
+        setRescrapeProgress({
+          isProcessing: true,
+          progress: 30,
+          status: 'Scraping website content...',
+          error: null,
+          clientId: client.id,
+        });
+
+        // Poll for scraping completion
+        if (client.api_key) {
+          monitorRescrapeProgress(scrapeResponse.data.jobId, client.api_key, client.id);
+        }
+      }
+    } catch (err: any) {
+      console.error('Error restarting rescrape and re-embed:', err);
+      setRescrapeProgress({
+        isProcessing: false,
+        progress: 0,
+        status: '',
+        error: err.response?.data?.error || 'Failed to start rescraping',
+        clientId: null,
+      });
+      alert(err.response?.data?.error || 'Failed to start rescraping and re-embedding');
+    }
+  };
+
+  const monitorRescrapeProgress = (jobId: string, apiKey: string, clientId: number) => {
+    let attempts = 0;
+    const maxAttempts = 600; // 10 minutes with 1-second intervals
+    
+    const pollInterval = setInterval(async () => {
+      attempts++;
+
+      try {
+        const response = await axiosInstance.get(`/scraper/job/${jobId}`, {
+          headers: { 'x-api-key': apiKey }
+        });
+
+        console.log('[monitorRescrapeProgress] Job status:', response.data);
+
+        if (response.data.status === 'completed') {
+          clearInterval(pollInterval);
+          
+          setRescrapeProgress({
+            isProcessing: true,
+            progress: 70,
+            status: 'Scraping complete. Generating embeddings...',
+            error: null,
+            clientId,
+          });
+
+          // Now trigger embeddings
+          triggerReembedding(apiKey, clientId);
+        } else if (response.data.status === 'processing') {
+          const currentProgress = 30 + (response.data.progress || 0) * 0.4; // Scale 0-100 to 30-70
+          setRescrapeProgress({
+            isProcessing: true,
+            progress: Math.min(currentProgress, 65),
+            status: `Scraping: ${response.data.progress || 0}%`,
+            error: null,
+            clientId,
+          });
+        } else if (response.data.status === 'failed') {
+          clearInterval(pollInterval);
+          setRescrapeProgress({
+            isProcessing: false,
+            progress: 0,
+            status: '',
+            error: response.data.error || 'Scraping failed',
+            clientId: null,
+          });
+          alert(`Error: ${response.data.error || 'Scraping failed'}`);
+        }
+      } catch (err) {
+        console.error('[monitorRescrapeProgress] Error:', err);
+      }
+
+      if (attempts >= maxAttempts) {
+        clearInterval(pollInterval);
+        setRescrapeProgress({
+          isProcessing: false,
+          progress: 0,
+          status: '',
+          error: 'Rescraping timeout - please try again',
+          clientId: null,
+        });
+        alert('Rescraping timeout - please try again');
+      }
+    }, 1000);
+  };
+
+  const triggerReembedding = async (apiKey: string, clientId: number) => {
+    try {
+      const response = await axiosInstance.post(
+        "/embeddings/generate",
+        {},
+        { headers: { 'x-api-key': apiKey } }
+      );
+
+      console.log('[triggerReembedding] Embeddings response:', response.data);
+
+      monitorReembeddingProgress(apiKey, clientId);
+    } catch (err: any) {
+      console.error('[triggerReembedding] Error:', err);
+      setRescrapeProgress({
+        isProcessing: false,
+        progress: 0,
+        status: '',
+        error: err.response?.data?.error || 'Failed to generate embeddings',
+        clientId: null,
+      });
+      alert(err.response?.data?.error || 'Failed to generate embeddings');
+    }
+  };
+
+  const monitorReembeddingProgress = (apiKey: string, clientId: number) => {
+    let attempts = 0;
+    const maxAttempts = 360; // 6 minutes with 1-second intervals
+
+    const pollInterval = setInterval(async () => {
+      attempts++;
+
+      try {
+        const response = await axiosInstance.get('/embeddings/stats', {
+          headers: { 'x-api-key': apiKey }
+        });
+
+        console.log('[monitorReembeddingProgress] Stats:', response.data);
+
+        const stats = response.data.stats || response.data;
+        const percentComplete = stats.percentComplete !== undefined ? stats.percentComplete : 0;
+        const pendingEmbeddings = stats.pendingEmbeddings !== undefined ? stats.pendingEmbeddings : 0;
+
+        // Check if embeddings are complete (100% or no pending embeddings)
+        if (percentComplete === 100 || pendingEmbeddings === 0) {
+          clearInterval(pollInterval);
+          setRescrapeProgress({
+            isProcessing: false,
+            progress: 100,
+            status: 'Rescraping and re-embedding complete!',
+            error: null,
+            clientId: null,
+          });
+          // Delay alert and refresh to let progress bar animate to 100%
+          setTimeout(() => {
+            alert('✓ Rescraping and re-embedding completed successfully!');
+            fetchClients(statusFilter);
+          }, 800);
+        } else {
+          const currentProgress = 70 + (percentComplete || 0) * 0.3;
+          setRescrapeProgress({
+            isProcessing: true,
+            progress: Math.min(currentProgress, 95),
+            status: `Re-embedding: ${percentComplete}%`,
+            error: null,
+            clientId,
+          });
+        }
+      } catch (err) {
+        console.error('[monitorReembeddingProgress] Error:', err);
+      }
+
+      if (attempts >= maxAttempts) {
+        clearInterval(pollInterval);
+        setRescrapeProgress({
+          isProcessing: false,
+          progress: 0,
+          status: '',
+          error: 'Re-embedding timeout - please try again',
+          clientId: null,
+        });
+        alert('Re-embedding timeout - please try again');
+      }
+    }, 1000);
+  };
+
+  const handleEditSubmit = async () => {
+    if (!selectedClient) return;
+
+    try {
+      setEditLoading(true);
+      const payload = {
+        company_name: editFormData.company_name || selectedClient.company_name,
+        website_url: editFormData.website_url || selectedClient.website_url,
+        status: editFormData.status || selectedClient.status,
+        widget_config: {
+          primaryColor: editFormData.primaryColor || selectedClient.primaryColor,
+          secondaryColor: editFormData.secondaryColor || selectedClient.secondaryColor,
+        },
+      };
+
+      const response = await axiosInstance.put(`/admin/clients/${selectedClient.id}`, payload);
+
+      if (response.data.success) {
+        alert('Client updated successfully!');
+        setEditModal(false);
+        fetchClients(statusFilter);
+      }
+    } catch (err: any) {
+      console.error('Error updating client:', err);
+      alert(err.response?.data?.error || 'Failed to update client');
+    } finally {
+      setEditLoading(false);
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!selectedClient) return;
+
+    try {
+      setDeleteLoading(true);
+      const response = await axiosInstance.delete(`/admin/clients/${selectedClient.id}`);
+
+      if (response.data.success) {
+        alert('Client deactivated successfully!');
+        setDeleteModal(false);
+        fetchClients(statusFilter);
+      }
+    } catch (err: any) {
+      console.error('Error deleting client:', err);
+      alert(err.response?.data?.error || 'Failed to delete client');
+    } finally {
+      setDeleteLoading(false);
+    }
   };
 
   return (
@@ -52,86 +401,225 @@ const Clients: React.FC = () => {
             Manage all your clients and their subscriptions
           </p>
         </div>
-
-        <div className='p-2 bg-[#000] rounded-md text-white' onClick={handleAddClient}>ADD CLIENT</div>
       </div>
 
       {/* Clients Table Card */}
-      <div className="bg-white border border-[#E2E8F0] rounded-lg overflow-hidden">
+      <div className="bg-white border border-[var(--color-border)] rounded-lg overflow-hidden">
         {/* Card Header */}
-        <div className="px-6 py-4 border-b border-[#E2E8F0] flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-[var(--color-border)] flex items-center justify-between">
           <h3 className="text-xl font-bold text-text-primary font-heading">
             All Clients
           </h3>
-          <button className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-md hover:bg-primary-hover transition-colors">
-            + Add Client
+          <Button 
+            onClick={handleAddClient}
+            label="+ Add Client"
+          />
+        </div>
+
+        {/* Status Tabs */}
+        <div className="px-6 py-4 border-b border-[var(--color-border)] flex gap-4">
+          <button
+            onClick={() => setStatusFilter('active')}
+            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              statusFilter === 'active'
+                ? 'text-white'
+                : 'bg-bg-light text-text-secondary hover:bg-gray-200'
+            }`}
+            style={statusFilter === 'active' ? { backgroundColor: 'var(--color-primary)' } : {}}
+          >
+            Active Clients
+          </button>
+          <button
+            onClick={() => setStatusFilter('inactive')}
+            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              statusFilter === 'inactive'
+                ? 'text-white'
+                : 'bg-bg-light text-text-secondary hover:bg-gray-200'
+            }`}
+            style={statusFilter === 'inactive' ? { backgroundColor: 'var(--color-primary)' } : {}}
+          >
+            Inactive Clients
           </button>
         </div>
 
+        {/* Progress Bar - Rescrape/Re-embed */}
+        {rescrapeProgress.isProcessing && (
+          <div className="mt-6 mb-6 px-6">
+            <div className="p-4 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200">
+              <div className="flex items-center justify-between mb-2">
+                <span className="font-semibold text-gray-800">{rescrapeProgress.status}</span>
+                <span className="text-sm font-medium text-gray-600">{rescrapeProgress.progress}%</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                <div
+                  className="h-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full transition-all duration-300"
+                  style={{ width: `${rescrapeProgress.progress}%` }}
+                />
+              </div>
+              {rescrapeProgress.error && (
+                <div className="mt-3 p-2 rounded bg-red-100 border border-red-300 text-red-700 text-sm font-medium">
+                  ⚠️ Error: {rescrapeProgress.error}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Table */}
         <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-bg-light border-b border-[#E2E8F0]">
-                <th className="px-6 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
-                  Client Name
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
-                  Email
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
-                  Plan
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
-                  Chatbots
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
-                  MRR
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#E2E8F0]">
-              {clients.map((client, index) => (
-                <tr key={index} className="hover:bg-bg-light transition-colors">
-                  <td className="px-6 py-4">
-                    <span className="font-semibold text-text-primary">{client.name}</span>
-                  </td>
-                  <td className="px-6 py-4 text-text-secondary">{client.email}</td>
-                  <td className="px-6 py-4">
-                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getBadgeClass(client.plan)}`}>
-                      {client.plan}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-text-secondary">{client.chatbots}</td>
-                  <td className="px-6 py-4 text-text-secondary font-semibold">{client.mrr}</td>
-                  <td className="px-6 py-4">
-                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusBadge(client.status)}`}>
-                      {client.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <button className="px-3 py-1.5 text-xs font-medium text-text-secondary border border-[#E2E8F0] rounded-md hover:bg-bg-light transition-colors">
-                      View
-                    </button>
-                  </td>
+          {loading ? (
+            <div className="p-6 text-center text-text-secondary">Loading clients...</div>
+          ) : error ? (
+            <div className="p-6 text-center text-red-500">{error}</div>
+          ) : clients.length === 0 ? (
+            <div className="p-6 text-center text-text-secondary">
+              No {statusFilter} clients found.
+            </div>
+          ) : (
+            <table className="w-full">
+              <thead>
+                <tr className="bg-bg-light border-b border-[var(--color-border)]">
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
+                    Company Name
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
+                    Website
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
+                    Created
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
+                    Actions
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-[var(--color-border)]">
+                {clients.map((client) => (
+                  <tr key={client.id} className="hover:bg-bg-light transition-colors">
+                    <td className="px-6 py-4">
+                      <span className="font-semibold text-text-primary">{client.company_name}</span>
+                    </td>
+                    <td className="px-6 py-4 text-text-secondary">{client.website_url}</td>
+                    <td className="px-6 py-4">
+                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusBadge(client.status)}`}>
+                        {client.status.charAt(0).toUpperCase() + client.status.slice(1)}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-text-secondary text-sm">
+                      {new Date(client.created_at).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 flex gap-2">
+                      <button
+                        onClick={() => handleViewClient(client)}
+                        className="px-3 py-1.5 text-xs font-medium text-[var(--color-primary)] border border-[var(--color-primary)] rounded-md hover:bg-[var(--color-primary-light)] transition-colors"
+                      >
+                        View
+                      </button>
+                      <button
+                        onClick={() => handleRescrapeAndReembed(client)}
+                        disabled={statusFilter === 'inactive'}
+                        className={`px-3 py-1.5 text-xs font-medium border rounded-md transition-colors ${
+                          statusFilter === 'inactive'
+                            ? 'text-gray-400 border-gray-300 bg-gray-50 cursor-not-allowed pointer-events-none'
+                            : 'text-green-600 border-green-200 hover:bg-green-50'
+                        }`}
+                        title="Rescrape website content and regenerate embeddings"
+                      >
+                        Rescrape
+                      </button>
+                      <button
+                        onClick={() => handleEditClient(client)}
+                        disabled={statusFilter === 'inactive'}
+                        className={`px-3 py-1.5 text-xs font-medium border rounded-md transition-colors ${
+                          statusFilter === 'inactive'
+                            ? 'text-gray-400 border-gray-300 bg-gray-50 cursor-not-allowed pointer-events-none'
+                            : 'text-blue-600 border-blue-200 hover:bg-blue-50'
+                        }`}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDeleteClient(client)}
+                        disabled={statusFilter === 'inactive'}
+                        className={`px-3 py-1.5 text-xs font-medium border rounded-md transition-colors ${
+                          statusFilter === 'inactive'
+                            ? 'text-gray-400 border-gray-300 bg-gray-50 cursor-not-allowed pointer-events-none'
+                            : 'text-[var(--color-error)] border-[var(--color-error)] hover:bg-red-50'
+                        }`}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
-        <Drawer open={isOpen} close={() => setIsOpen(false)} width='85vw' >
-
-
-          <AddClient close={() => setIsOpen(false)} />
-
+        <Drawer open={isOpen} close={() => setIsOpen(false)}>
+          <AddClient close={handleClientAdded} />
         </Drawer>
       </div>
+
+      {/* VIEW MODAL */}
+      <ViewModal
+        open={viewModal}
+        onClose={() => setViewModal(false)}
+        title="Client Details"
+        fields={selectedClient ? [
+          { label: 'Company Name', value: selectedClient.company_name },
+          { label: 'Website', value: selectedClient.website_url },
+          { label: 'Status', value: selectedClient.status.charAt(0).toUpperCase() + selectedClient.status.slice(1), isBadge: true, badgeClass: getStatusBadge(selectedClient.status) },
+          { label: 'Created Date', value: new Date(selectedClient.created_at).toLocaleString() },
+          ...(selectedClient.status === 'active' && selectedClient.embed_script ? [{ label: 'Embed Script', value: selectedClient.embed_script, isScript: true }] : []),
+        ] : []}
+        actions={selectedClient ? (
+          selectedClient.status === 'inactive' 
+            ? [
+                {
+                  label: 'Activate Client',
+                  onClick: () => handleActivateClient(selectedClient),
+                  color: 'var(--color-primary)',
+                }
+              ]
+            : [
+                {
+                  label: 'Rescrape & Re-embed',
+                  onClick: () => handleRescrapeAndReembed(selectedClient),
+                  color: '#10b981',
+                },
+              ]
+        ) : undefined}
+      />
+
+      {/* EDIT MODAL */}
+      <EditModal
+        open={editModal}
+        onClose={() => setEditModal(false)}
+        onSave={handleEditSubmit}
+        title="Edit Client"
+        loading={editLoading}
+        fields={selectedClient ? [
+          { name: 'company_name', label: 'Company Name', type: 'text', value: editFormData.company_name || '', onChange: (v) => setEditFormData({ ...editFormData, company_name: v }) },
+          { name: 'website_url', label: 'Website', type: 'text', value: editFormData.website_url || '', onChange: (v) => setEditFormData({ ...editFormData, website_url: v }) },
+          { name: 'primaryColor', label: 'Primary Color', type: 'color', value: editFormData.primaryColor || selectedClient.primaryColor || '#635BFF', onChange: (v) => setEditFormData({ ...editFormData, primaryColor: v }) },
+          { name: 'secondaryColor', label: 'Secondary Color', type: 'color', value: editFormData.secondaryColor || selectedClient.secondaryColor || '#0A2540', onChange: (v) => setEditFormData({ ...editFormData, secondaryColor: v }) },
+          { name: 'status', label: 'Status', type: 'select', value: editFormData.status || '', onChange: (v) => setEditFormData({ ...editFormData, status: v }), options: ['active', 'inactive', 'trial'] },
+        ] : []}
+      />
+
+      {/* DELETE MODAL */}
+      <DeleteModal
+        open={deleteModal}
+        onClose={() => setDeleteModal(false)}
+        onConfirm={handleConfirmDelete}
+        title="Deactivate Client"
+        itemName={selectedClient?.company_name || ''}
+        loading={deleteLoading}
+      />
     </div>
   );
 };
