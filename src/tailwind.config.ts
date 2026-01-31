@@ -14,6 +14,9 @@ const config: Config = {
           hover: '#5448E0',
           light: 'rgba(99, 91, 255, 0.1)',
         },
+        secondary: {
+          DEFAULT: '#0A2540'
+        },
         // Background Colors
         bg: {
           dark: '#0A2540',

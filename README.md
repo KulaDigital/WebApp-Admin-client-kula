@@ -195,6 +195,30 @@ The axios instance automatically:
 - Attaches the session token to the Authorization header
 - Redirects to `/login` on 401 responses (except for `/api/me` itself)
 
+### Client Management Endpoints
+
+**POST `/admin/clients`** - Create new client with company info
+**GET `/admin/clients` - List all clients with pagination
+**GET `/admin/clients/:id` - Get client details including embed_script
+**PUT `/admin/clients/:id` - Update client status (activate/deactivate)
+
+**POST `/scraper/crawl-domain`** - Initiate domain scraping
+- Headers: `x-api-key`
+- Body: `{ websiteUrl: string }`
+- Response: `{ jobId: string }`
+
+**GET `/scraper/job/:jobId`** - Get scraping job status
+- Headers: `x-api-key`
+- Response: `{ status: 'processing' | 'completed' | 'failed' }`
+
+**POST `/embeddings/generate`** - Generate embeddings for scraped content
+- Headers: `x-api-key`
+- Response: Initiates background embedding job
+
+**GET `/embeddings/stats`** - Get embeddings generation progress
+- Headers: `x-api-key`
+- Response: `{ stats: { percentComplete: 0-100, pendingEmbeddings: number, totalChunks: number, withEmbeddings: number } }`
+
 ## 📦 Dependencies
 
 ### Core Stack
@@ -260,6 +284,14 @@ The axios instance automatically:
 - ✅ Memory leak prevention in AuthContext
 - ✅ Proper loading state management
 - ✅ Centered loading spinner with fixed positioning
+- ✅ Multi-step client creation wizard (5 steps with progress tracking)
+- ✅ Domain scraping with real-time progress (max 10 minutes)
+- ✅ AI embeddings generation with progress tracking (max 6 minutes)
+- ✅ Client management dashboard with CRUD operations
+- ✅ View client details with embed script display
+- ✅ Rescrape and re-embed functionality for existing clients
+- ✅ Real-time progress bar visualization for rescrape operations
+- ✅ Success/error alerts with user feedback
 
 ## 🚧 Future Enhancements
 

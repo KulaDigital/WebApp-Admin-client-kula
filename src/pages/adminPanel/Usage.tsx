@@ -34,8 +34,8 @@ const Usage: React.FC = () => {
         ))}
       </div>
 
-      <div className="bg-white border border-[#E2E8F0] rounded-lg overflow-hidden">
-        <div className="px-6 py-4 border-b border-[#E2E8F0]">
+      <div className="bg-white border border-[var(--color-border)] rounded-lg overflow-hidden">
+        <div className="px-6 py-4 border-b border-[var(--color-border)]">
           <h3 className="text-xl font-bold text-text-primary font-heading">
             Client Usage Breakdown
           </h3>
@@ -44,7 +44,7 @@ const Usage: React.FC = () => {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-bg-light border-b border-[#E2E8F0]">
+              <tr className="bg-bg-light border-b border-[var(--color-border)]">
                 <th className="px-6 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">Client</th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">API Calls</th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">Storage</th>
@@ -52,7 +52,7 @@ const Usage: React.FC = () => {
                 <th className="px-6 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">Cost</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#E2E8F0]">
+            <tbody className="divide-y divide-[var(--color-border)]">
               {usageData.map((usage, index) => (
                 <tr key={index} className="hover:bg-bg-light transition-colors">
                   <td className="px-6 py-4"><span className="font-semibold text-text-primary">{usage.client}</span></td>
@@ -67,7 +67,7 @@ const Usage: React.FC = () => {
         </div>
       </div>
 
-      <div className="mt-8 bg-white border border-[#E2E8F0] rounded-lg p-6">
+      <div className="mt-8 bg-white border border-[var(--color-border)] rounded-lg p-6">
         <h3 className="text-xl font-bold text-text-primary mb-4 font-heading">
           API Usage Trends
         </h3>

@@ -33,7 +33,7 @@ const Analytics: React.FC = () => {
             {/* Charts Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Chart 1 - Conversations Over Time */}
-                <div className="bg-white border border-[#E2E8F0] rounded-lg p-6">
+                <div className="bg-white border border-[var(--color-border)] rounded-lg p-6">
                     <h3 className="text-xl font-bold text-text-primary mb-4 font-heading">
                         Conversations Over Time
                     </h3>
@@ -43,7 +43,7 @@ const Analytics: React.FC = () => {
                 </div>
 
                 {/* Chart 2 - Client Distribution */}
-                <div className="bg-white border border-[#E2E8F0] rounded-lg p-6">
+                <div className="bg-white border border-[var(--color-border)] rounded-lg p-6">
                     <h3 className="text-xl font-bold text-text-primary mb-4 font-heading">
                         Client Distribution
                     </h3>
@@ -53,7 +53,7 @@ const Analytics: React.FC = () => {
                 </div>
 
                 {/* Chart 3 - Response Time Trends */}
-                <div className="bg-white border border-[#E2E8F0] rounded-lg p-6">
+                <div className="bg-white border border-[var(--color-border)] rounded-lg p-6">
                     <h3 className="text-xl font-bold text-text-primary mb-4 font-heading">
                         Response Time Trends
                     </h3>
@@ -63,7 +63,7 @@ const Analytics: React.FC = () => {
                 </div>
 
                 {/* Chart 4 - Top Performing Chatbots */}
-                <div className="bg-white border border-[#E2E8F0] rounded-lg p-6">
+                <div className="bg-white border border-[var(--color-border)] rounded-lg p-6">
                     <h3 className="text-xl font-bold text-text-primary mb-4 font-heading">
                         Top Performing Chatbots
                     </h3>

@@ -22,7 +22,7 @@ const TopHeader: React.FC<TopHeaderProps> = ({ currentPage = 'Dashboard' }) => {
           <input
             type="text"
             placeholder="Search clients, chatbots..."
-            className="w-[320px] pl-10 pr-4 py-2.5 border border-[#E2E8F0] rounded-md text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
+            className="w-[320px] pl-10 pr-4 py-2.5 border border-[var(--color-border)] rounded-md text-sm outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10"
           />
         </div>
 

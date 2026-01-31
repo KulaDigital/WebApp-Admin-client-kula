@@ -27,9 +27,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [userRole, setUserRole] = useState<UserRole | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [roleLoading, setRoleLoading] = useState(false);
+  const [fetchedRoleForSession, setFetchedRoleForSession] = useState<string | null>(null);
 
   // Fetch user role from backend
-  const fetchUserRole = async (accessToken: string) => {
+  const fetchUserRole = async (accessToken: string, sessionId?: string) => {
     setRoleLoading(true);
     try {
       const response = await axiosInstance.get('/me', {
@@ -39,6 +40,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       });
       const { role, client_id, user_name } = response.data;
       setUserRole({ role, clientId: client_id, userName: user_name });
+      // Track that we've fetched the role for this session
+      if (sessionId) {
+        setFetchedRoleForSession(sessionId);
+      }
     } catch (error) {
       console.error('Failed to fetch user role:', error);
       setUserRole(null);
@@ -64,9 +69,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setSession(currentSession);
         setUser(currentSession?.user || null);
 
-        // Fetch role if session exists
+        // Fetch role if session exists and we haven't fetched it for this session yet
         if (currentSession?.access_token) {
-          await fetchUserRole(currentSession.access_token);
+          const sessionId = currentSession.user?.id;
+          if (sessionId !== fetchedRoleForSession) {
+            await fetchUserRole(currentSession.access_token, sessionId);
+          }
         }
 
         // Listen to auth state changes
@@ -79,9 +87,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           setUser(newSession?.user || null);
 
           if (newSession?.access_token) {
-            await fetchUserRole(newSession.access_token);
+            const sessionId = newSession.user?.id;
+            // Only fetch role if this is a new session we haven't fetched for
+            if (sessionId !== fetchedRoleForSession) {
+              await fetchUserRole(newSession.access_token, sessionId);
+            }
           } else {
             setUserRole(null);
+            setFetchedRoleForSession(null);
           }
         });
 
@@ -105,7 +118,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         unsubscribe();
       }
     };
-  }, []);
+  }, [fetchedRoleForSession]);
 
   const signIn = async (email: string, password: string) => {
     setAuthLoading(true);

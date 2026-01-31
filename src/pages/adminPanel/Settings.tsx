@@ -29,7 +29,7 @@ const Settings: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* General Settings */}
-        <div className="bg-white border border-[#E2E8F0] rounded-lg p-6">
+        <div className="bg-white border border-[var(--color-border)] rounded-lg p-6">
           <h3 className="text-xl font-bold text-text-primary mb-6 font-heading">General Settings</h3>
           <div className="space-y-4">
             <div>
@@ -39,7 +39,7 @@ const Settings: React.FC = () => {
                 name="platformName"
                 value={settings.platformName}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-[#E2E8F0] rounded-md outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
+                className="w-full px-4 py-2 border border-[var(--color-border)] rounded-md outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
               />
             </div>
             <div>
@@ -49,14 +49,14 @@ const Settings: React.FC = () => {
                 name="supportEmail"
                 value={settings.supportEmail}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-[#E2E8F0] rounded-md outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
+                className="w-full px-4 py-2 border border-[var(--color-border)] rounded-md outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
               />
             </div>
           </div>
         </div>
 
         {/* Notification Settings */}
-        <div className="bg-white border border-[#E2E8F0] rounded-lg p-6">
+        <div className="bg-white border border-[var(--color-border)] rounded-lg p-6">
           <h3 className="text-xl font-bold text-text-primary mb-6 font-heading">Notifications</h3>
           <div className="space-y-4">
             <div className="flex items-center justify-between p-4 bg-bg-light rounded-md">
@@ -96,7 +96,7 @@ const Settings: React.FC = () => {
         </div>
 
         {/* API Settings */}
-        <div className="bg-white border border-[#E2E8F0] rounded-lg p-6">
+        <div className="bg-white border border-[var(--color-border)] rounded-lg p-6">
           <h3 className="text-xl font-bold text-text-primary mb-6 font-heading">API Configuration</h3>
           <div className="space-y-4">
             <div>
@@ -107,7 +107,7 @@ const Settings: React.FC = () => {
                   name="apiKey"
                   value={settings.apiKey}
                   readOnly
-                  className="w-full px-4 py-2 border border-[#E2E8F0] rounded-md bg-bg-light text-text-secondary"
+                  className="w-full px-4 py-2 border border-[var(--color-border)] rounded-md bg-bg-light text-text-secondary"
                 />
                 <button className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1 text-xs font-medium text-primary hover:text-primary-hover">
                   Copy
@@ -122,20 +122,20 @@ const Settings: React.FC = () => {
                 value={settings.webhookUrl}
                 onChange={handleInputChange}
                 placeholder="https://your-domain.com/webhook"
-                className="w-full px-4 py-2 border border-[#E2E8F0] rounded-md outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
+                className="w-full px-4 py-2 border border-[var(--color-border)] rounded-md outline-none focus:border-primary focus:ring-2 focus:ring-primary/10"
               />
             </div>
           </div>
         </div>
 
         {/* Security Settings */}
-        <div className="bg-white border border-[#E2E8F0] rounded-lg p-6">
+        <div className="bg-white border border-[var(--color-border)] rounded-lg p-6">
           <h3 className="text-xl font-bold text-text-primary mb-6 font-heading">Security</h3>
           <div className="space-y-4">
-            <button className="w-full px-4 py-2 text-sm font-medium text-text-secondary border border-[#E2E8F0] rounded-md hover:bg-bg-light transition-colors text-left">
+            <button className="w-full px-4 py-2 text-sm font-medium text-text-secondary border border-[var(--color-border)] rounded-md hover:bg-bg-light transition-colors text-left">
               Change Password
             </button>
-            <button className="w-full px-4 py-2 text-sm font-medium text-text-secondary border border-[#E2E8F0] rounded-md hover:bg-bg-light transition-colors text-left">
+            <button className="w-full px-4 py-2 text-sm font-medium text-text-secondary border border-[var(--color-border)] rounded-md hover:bg-bg-light transition-colors text-left">
               Enable Two-Factor Authentication
             </button>
             <button className="w-full px-4 py-2 text-sm font-medium text-status-error border border-status-error/20 rounded-md hover:bg-status-error/5 transition-colors text-left">

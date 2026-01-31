@@ -24,7 +24,7 @@ const StatCard: React.FC<StatCardProps> = ({
   };
 
   return (
-    <div className="bg-white border border-[#E2E8F0] rounded-lg p-6 hover:shadow-md transition-shadow">
+    <div className="bg-white border border-[var(--color-border)] rounded-lg p-6 hover:shadow-md transition-shadow">
       {/* Icon */}
       <div className="flex items-center justify-between mb-4">
         <div className={`w-12 h-12 rounded-md ${iconColors[iconColor]} flex items-center justify-center text-2xl`}>
