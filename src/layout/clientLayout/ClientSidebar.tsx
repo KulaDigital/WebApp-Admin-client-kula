@@ -17,26 +17,32 @@ const navSections: NavSection[] = [
         title: "MAIN",
         items: [
             { label: "Dashboard", path: "/client/dashboard" },
-            { label: "My Chatbot", path: "/client/dashboard" },
-            { label: "Chatbot Configuration", path: "/client/analytics" },
-            { label: "Conversations", path: "/client/analytics" },
+            { label: "My Chatbot", path: "/client/chatbot" },
+            { label: "Chatbot Configuration", path: "/client/chatbot-config" },
+            { label: "Conversations", path: "/client/conversations" },
             { label: "Analytics", path: "/client/analytics" },
+        ],
+    },
+    {
+        title: "TRAINING",
+        items: [
+            { label: "Web Scraper", path: "/client/web-scraper" },
+            { label: "Test Chatbot", path: "/client/test-chatbot" },
         ],
     },
     {
         title: "SUPPORT",
         items: [
-            { label: "Tickets", path: "/client/settings" },
-            { label: "Active Logs", path: "/client/security" },
-            { label: "User Feedback", path: "/client/integrations" },
+            { label: "Tickets", path: "/client/tickets" },
+            { label: "Active Logs", path: "/client/active-logs" },
+            { label: "User Feedback", path: "/client/user-feedback" },
         ],
     },
     {
         title: "SYSTEM",
         items: [
-
             { label: "Settings", path: "/client/settings" },
-            { label: "API Management", path: "/client/integrations" },
+            { label: "API Management", path: "/client/api-management" },
             { label: "Integrations", path: "/client/integrations" },
             { label: "Security", path: "/client/security" },
         ],
