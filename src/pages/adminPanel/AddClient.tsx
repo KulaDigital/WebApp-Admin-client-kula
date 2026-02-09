@@ -4,11 +4,13 @@ import Card from "../../components/FormCard";
 import Input from "../../components/FormInput";
 import Position from "../../components/FormPosition";
 import axiosInstance from "../../utils/instance";
+import publicAxios from "../../utils/publicInstance";
 import { getCSSVariableValueWithDefault } from "../../utils/cssVariables";
+import type { SubscriptionPlan, SubscriptionPeriod } from "../../types";
 
 type PositionType = "bottom-right" | "bottom-left";
 type AddClientProps = { close: () => void };
-type StepType = "company-info" | "generate-api-key" | "scrape-domain" | "generate-embeddings" | "complete";
+type StepType = "company-info" | "subscription" | "generate-api-key" | "scrape-domain" | "generate-embeddings" | "complete";
 
 interface ClientResponse {
     id: number;
@@ -41,6 +43,13 @@ export default function AddClient({ close }: AddClientProps) {
         secondaryColor: getCSSVariableValueWithDefault('--color-secondary', '#0A2540'),
         message: "Hi! 👋 I'm Greeto, your AI assistant. How can I help you today?",
     }));
+
+    // Subscription configuration
+    const [subscription, setSubscription] = useState<{
+        isTrial: boolean;
+        plan: SubscriptionPlan;
+        period: SubscriptionPeriod;
+    } | null>(null);
 
     // Client data from API
     const [clientData, setClientData] = useState<ClientResponse | null>(null);
@@ -88,7 +97,7 @@ export default function AddClient({ close }: AddClientProps) {
             setError(null);
             setCurrentStep("generate-api-key");
 
-            const payload = {
+            const payload: any = {
                 company_name: form.companyName,
                 website_url: form.website,
                 widget_config: {
@@ -98,6 +107,15 @@ export default function AddClient({ close }: AddClientProps) {
                     welcomeMessage: form.message,
                 },
             };
+
+            // Add subscription config if provided
+            if (subscription) {
+                payload.subscription = {
+                    is_trial: subscription.isTrial,
+                    plan: subscription.plan,
+                    period: subscription.period,
+                };
+            }
 
             const response = await axiosInstance.post("/admin/clients", payload);
 
@@ -141,7 +159,7 @@ export default function AddClient({ close }: AddClientProps) {
 
             console.log("[handleScrapeDomain] Starting scrape for website:", form.website);
 
-            const response = await axiosInstance.post(
+            const response = await publicAxios.post(
                 "/scraper/crawl-domain",
                 { websiteUrl: form.website },
                 { headers: { "x-api-key": clientData.api_key } }
@@ -190,7 +208,7 @@ export default function AddClient({ close }: AddClientProps) {
                 attempts++;
                 console.log(`[Scraping Poll] Attempt ${attempts}/${maxAttempts}, JobId: ${jobId}`);
                 
-                const response = await axiosInstance.get(`/scraper/job/${jobId}`, {
+                const response = await publicAxios.get(`/scraper/job/${jobId}?client_id=${clientData?.id}`, {
                     headers: { "x-api-key": apiKey },
                 });
 
@@ -266,7 +284,7 @@ export default function AddClient({ close }: AddClientProps) {
 
             console.log("[handleGenerateEmbeddings] Starting embeddings generation");
 
-            const response = await axiosInstance.post(
+            const response = await publicAxios.post(
                 "/embeddings/generate",
                 {},
                 { headers: { "x-api-key": apiKey } }
@@ -314,7 +332,7 @@ export default function AddClient({ close }: AddClientProps) {
                 attempts++;
                 console.log(`[Embeddings Poll] Attempt ${attempts}/${maxAttempts}`);
                 
-                const response = await axiosInstance.get("/embeddings/stats", {
+                const response = await publicAxios.get(`/embeddings/stats?client_id=${clientData?.id}`, {
                     headers: { "x-api-key": apiKey },
                 });
 
@@ -369,7 +387,7 @@ export default function AddClient({ close }: AddClientProps) {
     };
 
     const isStepCompleted = (stepType: StepType): boolean => {
-        const steps: StepType[] = ["company-info", "generate-api-key", "scrape-domain", "generate-embeddings", "complete"];
+        const steps: StepType[] = ["company-info", "subscription", "generate-api-key", "scrape-domain", "generate-embeddings", "complete"];
         return steps.indexOf(stepType) < steps.indexOf(currentStep);
     };
 
@@ -404,6 +422,7 @@ export default function AddClient({ close }: AddClientProps) {
                     <div>
                         <h1 className="text-text-primary font-heading text-2xl">
                             {currentStep === "company-info" && "Add New Client"}
+                            {currentStep === "subscription" && "Configure Subscription"}
                             {currentStep === "generate-api-key" && "Creating Client..."}
                             {currentStep === "scrape-domain" && "Scraping Domain"}
                             {currentStep === "generate-embeddings" && "Generating Embeddings"}
@@ -411,6 +430,7 @@ export default function AddClient({ close }: AddClientProps) {
                         </h1>
                         <p className="text-text-secondary font-body text-sm mt-1">
                             {currentStep === "company-info" && "Fill in your company details and widget configuration"}
+                            {currentStep === "subscription" && "Choose subscription plan and billing period"}
                             {currentStep === "generate-api-key" && "Generating your API key..."}
                             {currentStep === "scrape-domain" && "Crawling your website for content"}
                             {currentStep === "generate-embeddings" && "Creating AI embeddings for your content"}
@@ -422,14 +442,16 @@ export default function AddClient({ close }: AddClientProps) {
                 {/* Steps */}
                 <div className="flex justify-between gap-1 mb-4">
                     <StepIndicator stepNumber={1} label="Company Info" isActive={currentStep === "company-info"} isCompleted={isStepCompleted("company-info")} />
+                    <div className="flex-1 h-1 bg-gray-200 my-4 mx-1 rounded" style={{ opacity: isStepCompleted("subscription") ? 1 : 0.3 }} />
+                    <StepIndicator stepNumber={2} label="Subscription" isActive={currentStep === "subscription"} isCompleted={isStepCompleted("subscription")} />
                     <div className="flex-1 h-1 bg-gray-200 my-4 mx-1 rounded" style={{ opacity: isStepCompleted("generate-api-key") ? 1 : 0.3 }} />
-                    <StepIndicator stepNumber={2} label="API Key" isActive={currentStep === "generate-api-key"} isCompleted={isStepCompleted("generate-api-key")} />
+                    <StepIndicator stepNumber={3} label="API Key" isActive={currentStep === "generate-api-key"} isCompleted={isStepCompleted("generate-api-key")} />
                     <div className="flex-1 h-1 bg-gray-200 my-4 mx-1 rounded" style={{ opacity: isStepCompleted("scrape-domain") ? 1 : 0.3 }} />
-                    <StepIndicator stepNumber={3} label="Scrape" isActive={currentStep === "scrape-domain"} isCompleted={isStepCompleted("scrape-domain")} />
+                    <StepIndicator stepNumber={4} label="Scrape" isActive={currentStep === "scrape-domain"} isCompleted={isStepCompleted("scrape-domain")} />
                     <div className="flex-1 h-1 bg-gray-200 my-4 mx-1 rounded" style={{ opacity: isStepCompleted("generate-embeddings") ? 1 : 0.3 }} />
-                    <StepIndicator stepNumber={4} label="Embeddings" isActive={currentStep === "generate-embeddings"} isCompleted={isStepCompleted("generate-embeddings")} />
+                    <StepIndicator stepNumber={5} label="Embeddings" isActive={currentStep === "generate-embeddings"} isCompleted={isStepCompleted("generate-embeddings")} />
                     <div className="flex-1 h-1 bg-gray-200 my-4 mx-1 rounded" style={{ opacity: isStepCompleted("complete") ? 1 : 0.3 }} />
-                    <StepIndicator stepNumber={5} label="Complete" isActive={currentStep === "complete"} isCompleted={isStepCompleted("complete")} />
+                    <StepIndicator stepNumber={6} label="Complete" isActive={currentStep === "complete"} isCompleted={isStepCompleted("complete")} />
                 </div>
             </div>
 
@@ -543,7 +565,95 @@ export default function AddClient({ close }: AddClientProps) {
                 </>
             )}
 
-            {/* STEP 2: GENERATING API KEY */}
+            {/* STEP 2: SUBSCRIPTION CONFIGURATION */}
+            {currentStep === "subscription" && (
+                <Card title="Subscription Configuration">
+                    <div className="space-y-6">
+                        {/* Trial Checkbox */}
+                        <div className="flex items-center gap-3 p-4 border border-[var(--color-border)] rounded-lg hover:bg-gray-50 cursor-pointer transition-colors" onClick={() => setSubscription(subscription ? { ...subscription, isTrial: !subscription.isTrial } : { isTrial: true, plan: 'professional', period: 'monthly' })}>
+                            <input
+                                type="checkbox"
+                                checked={subscription?.isTrial ?? false}
+                                onChange={(e) => {
+                                    e.stopPropagation();
+                                    if (subscription) {
+                                        setSubscription({ ...subscription, isTrial: e.target.checked });
+                                    } else {
+                                        setSubscription({ isTrial: e.target.checked, plan: 'professional', period: 'monthly' });
+                                    }
+                                }}
+                                className="w-5 h-5 rounded cursor-pointer"
+                            />
+                            <div className="flex-1">
+                                <p className="text-sm font-semibold text-text-primary">Create as Trial</p>
+                                <p className="text-xs text-text-secondary mt-1">Start with a 30-day free professional trial period</p>
+                            </div>
+                        </div>
+
+                        {/* Plan Selection */}
+                        <div className="space-y-2">
+                            <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wide">
+                                Plan
+                            </label>
+                            <select
+                                value={subscription?.plan ?? 'professional'}
+                                onChange={(e) => setSubscription(subscription ? { ...subscription, plan: e.target.value as SubscriptionPlan } : { isTrial: false, plan: e.target.value as SubscriptionPlan, period: 'monthly' })}
+                                className="w-full px-4 py-2.5 border border-[var(--color-border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent text-text-primary font-medium bg-white"
+                                disabled={subscription?.isTrial}
+                            >
+                                <option value="professional">Professional</option>
+                                <option value="business">Business</option>
+                                <option value="enterprise">Enterprise</option>
+                            </select>
+                            {subscription?.isTrial && (
+                                <p className="text-xs text-amber-600">💡 Trial subscriptions use Professional plan only</p>
+                            )}
+                        </div>
+
+                        {/* Period Selection */}
+                        <div className="space-y-2">
+                            <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wide">
+                                Billing Period
+                            </label>
+                            <div className="grid grid-cols-2 gap-3">
+                                <button
+                                    onClick={() => setSubscription(subscription ? { ...subscription, period: 'monthly' } : { isTrial: false, plan: 'professional', period: 'monthly' })}
+                                    className={`px-4 py-3 rounded-lg font-medium transition-colors border-2 ${subscription?.period === 'monthly' ? 'border-[var(--color-primary)] bg-blue-50 text-[var(--color-primary)]' : 'border-gray-200 bg-white text-text-secondary hover:border-gray-300'}`}
+                                    disabled={subscription?.isTrial}
+                                >
+                                    Monthly
+                                </button>
+                                <button
+                                    onClick={() => setSubscription(subscription ? { ...subscription, period: 'yearly' } : { isTrial: false, plan: 'professional', period: 'yearly' })}
+                                    className={`px-4 py-3 rounded-lg font-medium transition-colors border-2 ${subscription?.period === 'yearly' ? 'border-[var(--color-primary)] bg-blue-50 text-[var(--color-primary)]' : 'border-gray-200 bg-white text-text-secondary hover:border-gray-300'}`}
+                                    disabled={subscription?.isTrial}
+                                >
+                                    Yearly
+                                </button>
+                            </div>
+                            {subscription?.isTrial && (
+                                <p className="text-xs text-amber-600">💡 Trial subscriptions use Monthly period only</p>
+                            )}
+                        </div>
+
+                        {/* Summary */}
+                        <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg space-y-1">
+                            <p className="text-sm font-semibold text-blue-900">Subscription Summary</p>
+                            <p className="text-sm text-blue-800">
+                                {subscription?.isTrial ? (
+                                    <>🎉 <strong>30-day free trial</strong> • Professional plan • Monthly period</>
+                                ) : subscription ? (
+                                    <>{subscription.plan.charAt(0).toUpperCase() + subscription.plan.slice(1)} plan • {subscription.period.charAt(0).toUpperCase() + subscription.period.slice(1)} billing</>
+                                ) : (
+                                    <>No subscription configured</>
+                                )}
+                            </p>
+                        </div>
+                    </div>
+                </Card>
+            )}
+
+            {/* STEP 3: GENERATING API KEY */}
             {currentStep === "generate-api-key" && (
                 <Card title="Creating Client">
                     <div className="flex flex-col items-center gap-6 py-12">
@@ -743,9 +853,19 @@ export default function AddClient({ close }: AddClientProps) {
                     <>
                         <Button label={'Cancel'} onClick={close} color="secondary" variant="outline" />
                         <Button
-                            onClick={handleGenerateApiKey}
-                            label="Generate API Key"
+                            onClick={() => setCurrentStep("subscription")}
+                            label="Next"
                             disabled={!form.companyName.trim() || !form.website.trim()}
+                        />
+                    </>
+                )}
+                {currentStep === "subscription" && (
+                    <>
+                        <Button label={'Back'} onClick={() => setCurrentStep("company-info")} color="secondary" variant="outline" />
+                        <Button label={'Skip'} onClick={() => setCurrentStep("generate-api-key")} color="secondary" variant="outline" />
+                        <Button
+                            onClick={handleGenerateApiKey}
+                            label="Continue"
                         />
                     </>
                 )}

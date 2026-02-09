@@ -15,16 +15,37 @@ This project implements a comprehensive admin and client management system with:
 
 ## ✨ Key Features
 
+### Core Authentication & Security
 - ✅ Email/password authentication with Supabase
 - ✅ Session management with automatic token refresh
-- ✅ Role-based route protection
-- ✅ Dual dashboard layouts (Super Admin & Client)
-- ✅ Dynamic user profile display
+- ✅ Role-based access control (super_admin & client)
+- ✅ Protected routes with role validation
+- ✅ Dual axios instances (authenticated & public)
 - ✅ Secure axios interceptors with 401 handling
 - ✅ Environment-based configuration
-- ✅ Loading state management
-- ✅ Access denied (403) handling
-- ✅ Professional login UI with keyboard support
+
+### Admin Panel
+- ✅ Dashboard with key metrics and overview
+- ✅ Multi-step client creation wizard with subscriptions
+- ✅ Subscription management (status, plan, period updates)
+- ✅ Support ticket management with filtering
+- ✅ Client rescraping and re-embedding
+- ✅ Professional navigation menu with organized sections
+
+### Client Portal
+- ✅ Dashboard with knowledge base statistics
+- ✅ Chatbot widget configuration (colors, position, greeting)
+- ✅ Web scraper management with rescraping
+- ✅ Conversation history viewer with pagination
+- ✅ Quick action shortcuts for common tasks
+
+### UI/UX
+- ✅ Dynamic Coming Soon pages with custom icons
+- ✅ Custom scrollbar styling (Chrome & Firefox)
+- ✅ Improved layout spacing and max-width constraints
+- ✅ Professional loading states and spinners
+- ✅ Access denied (403) handling with context
+- ✅ Glassmorphic design with TailwindCSS and Material-UI
 
 ## 🏗️ Project Structure
 
@@ -34,49 +55,137 @@ src/
 │   ├── Button.tsx              # Reusable button component
 │   ├── Drawer.tsx              # Drawer component
 │   ├── ProtectedRoute.tsx       # Route guard with role validation ⭐
-│   └── StatCard.tsx            # Statistics card component
+│   ├── StatCard.tsx            # Statistics card component
+│   ├── FormCard.tsx            # Form card wrapper
+│   ├── FormInput.tsx           # Form input component
+│   ├── FormPosition.tsx        # Position selector component
+│   ├── FormRadio.tsx           # Radio button component
+│   ├── FormSelect.tsx          # Select dropdown component
+│   ├── PlanCard.tsx            # Subscription plan card
+│   ├── DeleteModal.tsx         # Delete confirmation modal
+│   ├── EditModal.tsx           # Edit modal component
+│   └── ViewModal.tsx           # View details modal
 ├── context/
 │   └── AuthContext.tsx         # Authentication provider with session & role management ⭐
 ├── layout/
 │   ├── adminLayout/
-│   │   ├── Layout.tsx          # Admin dashboard layout
-│   │   ├── Sidebar.tsx         # Admin sidebar with user profile
-│   │   ├── SidebarMenu.tsx     # Admin menu items
+│   │   ├── Layout.tsx          # Admin dashboard layout (enhanced with max-width)
+│   │   ├── Sidebar.tsx         # Admin sidebar with organized menu
+│   │   ├── SidebarMenu.tsx     # Admin navigation menu items
 │   │   └── TopBar.tsx          # Admin top navigation
 │   └── clientLayout/
-│       ├── ClientLayout.tsx    # Client dashboard layout
+│       ├── ClientLayout.tsx    # Client dashboard layout (enhanced with max-width)
 │       ├── ClientHeder.tsx     # Client header
-│       └── ClientSidebar.tsx   # Client sidebar with user profile
+│       └── ClientSidebar.tsx   # Client sidebar with organized menu
 ├── login/
 │   └── Login.tsx               # Email/password login form ⭐
 ├── pages/
+│   ├── ComingSoon.tsx          # Coming Soon component with custom icons ⭐
 │   ├── adminPanel/
 │   │   ├── Dashboard.tsx
 │   │   ├── Analytics.tsx
 │   │   ├── Clients.tsx
-│   │   ├── Billing.tsx
-│   │   ├── Subscription.tsx
-│   │   ├── Support.tsx
-│   │   ├── Chatbot.tsx
-│   │   ├── Intergrations.tsx
-│   │   ├── Security.tsx
+│   │   ├── Users.tsx
+│   │   ├── Subscription.tsx    # Subscription management with modal
+│   │   ├── Tickets.tsx         # Support tickets listing ⭐
 │   │   ├── Settings.tsx
-│   │   ├── Usage.tsx
-│   │   └── AddClient.tsx
+│   │   ├── Security.tsx
+│   │   ├── Intergrations.tsx
+│   │   └── AddClient.tsx       # 6-step client creation with subscriptions
 │   ├── clientPanel/
-│   │   └── ClientDashboard.tsx
+│   │   ├── ClientDashboard.tsx # Dashboard with stats
+│   │   ├── ChatbotConfiguration.tsx  # Widget configuration ⭐
+│   │   ├── Conversations.tsx   # Message thread viewer ⭐
+│   │   └── WebScraper.tsx      # URL management with rescraping ⭐
 │   └── NoAccess.tsx            # 403 error page with sign-out option ⭐
 ├── utils/
 │   ├── supabase.ts             # Supabase client initialization ⭐
 │   ├── instance.ts             # Authenticated axios instance with interceptors ⭐
 │   ├── publicInstance.ts       # Public axios instance (no auth) ⭐
+│   ├── subscriptionApi.ts      # Subscription API utilities ⭐
+│   ├── cssVariables.ts         # CSS variable getters
 │   └── API_CLIENTS_GUIDE.ts    # API client usage documentation
 ├── App.tsx                     # Main app with routing and AuthProvider wrapper
+├── App.css                     # Global styles (with custom scrollbars)
 ├── types.tsx                   # TypeScript interfaces and types
 ├── main.tsx                    # React entry point
 ├── tailwind.config.ts          # TailwindCSS configuration
 └── index.html                  # HTML template
 ```
+
+### Key Dashboard Enhancements (Latest)
+
+**New Coming Soon Component**
+- Dynamic Coming Soon pages with custom SVG icons
+- Custom icons for Analytics, Chatbots, Billing, Usage, API Management, Settings, Security, Tickets, Logs, and Feedback
+- Animated icon bouncing effect with gradient backgrounds
+- Feature development status display
+
+**Enhanced Admin Routes**
+- New Admin panel routes: `/SA/billing`, `/SA/support`, `/SA/active-logs`, `/SA/user-feedback`, `/SA/api-management`
+- All placeholder routes now use ComingSoon component instead of simple components
+- Organized navigation menu with 4 sections (MAIN, MANAGEMENT, SUPPORT, SYSTEM)
+
+**Enhanced Client Routes**
+- New client portal routes: `/client/chatbot`, `/client/chatbot-config`, `/client/conversations`, `/client/web-scraper`
+- Additional routes: `/client/test-chatbot`, `/client/tickets`, `/client/active-logs`, `/client/user-feedback`, `/client/api-management`
+- Organized sidebar with 4 sections (MAIN, TRAINING, SUPPORT, SYSTEM)
+
+**Subscription Management** ⭐
+- Backend API integration for managing client subscriptions
+- Real-time subscription status updates (active/expired/canceled)
+- Subscription plan management (professional/business/enterprise)
+- Support for trial periods with locked plan/period
+- Modal interface for managing individual client subscriptions
+- Comprehensive subscription utilities in `subscriptionApi.ts`
+
+**Support Tickets Component** ⭐
+- Support ticket listing for admin panel
+- Filter by status (all, open, in-progress, resolved)
+- Color-coded priority indicators
+- Created date tracking
+- Professional table layout
+
+**Chatbot Configuration** ⭐
+- Client-facing widget customization interface
+- Color picker for primary and secondary colors
+- Widget position selector (bottom-right, bottom-left)
+- Welcome message customization (200 char limit)
+- Save and reset functionality with success feedback
+
+**Web Scraper Component** ⭐
+- URL management interface for client panel
+- Rescrape functionality with automatic embeddings
+- Statistics display (chunks, words per URL)
+- Success/error feedback messages
+- Real-time progress indication with spinning icon
+
+**Conversations Viewer** ⭐
+- View conversation history with pagination
+- Filter conversations by status (all, active, closed)
+- Message thread display with timestamps
+- Visitor ID tracking and conversation details
+- Clean message layout with role-based styling
+
+**Client Dashboard Stats** ⭐
+- Knowledge base statistics (scraped URLs, chunks, words)
+- Quick action shortcuts to common features
+- Recent updates section with getting started tips
+- Responsive grid layout with icon indicators
+
+**Layout Improvements**
+- Admin layout main content uses `flex-1` for proper spacing
+- Client layout mirrors admin layout improvements
+- Max-width container (max-w-7xl) for optimal readability
+- Enhanced padding (px-7 py-6) and spacing throughout
+- Removed display: flex from root element for better responsiveness
+
+**UI/UX Enhancements**
+- Custom scrollbar styling for webkit (Chrome/Safari) and Firefox
+- Thin scrollbar with gray styling (#D1D5DB)
+- Hover state with darker gray (#9CA3AF)
+- Transparent background for scrollbar track
+- Improved overall visual hierarchy and spacing
 
 ### Key Files
 
@@ -87,6 +196,15 @@ src/
 - `src/utils/supabase.ts` - Supabase client singleton
 - `src/utils/instance.ts` - Authenticated HTTP client with token attachment and 401 handling
 - `src/pages/NoAccess.tsx` - Access denied page with context-aware messaging
+
+⭐ **Dashboard Features (New):**
+- `src/pages/ComingSoon.tsx` - Coming Soon component with customizable content and icons
+- `src/utils/subscriptionApi.ts` - Subscription management utilities
+- `src/pages/adminPanel/Subscription.tsx` - Admin subscription management interface
+- `src/pages/adminPanel/Tickets.tsx` - Support tickets listing and filtering
+- `src/pages/clientPanel/ChatbotConfiguration.tsx` - Widget customization interface
+- `src/pages/clientPanel/WebScraper.tsx` - URL and scraping management
+- `src/pages/clientPanel/Conversations.tsx` - Conversation viewer with pagination
 
 ## 🔐 Authentication Flow
 
@@ -197,27 +315,62 @@ The axios instance automatically:
 
 ### Client Management Endpoints
 
-**POST `/admin/clients`** - Create new client with company info
-**GET `/admin/clients` - List all clients with pagination
-**GET `/admin/clients/:id` - Get client details including embed_script
-**PUT `/admin/clients/:id` - Update client status (activate/deactivate)
+**POST `/admin/clients`** - Create new client with company info and subscription config
+**GET `/admin/clients`** - List all clients with pagination
+**GET `/admin/clients/:id`** - Get client details including embed_script
+**PUT `/admin/clients/:id`** - Update client status (activate/deactivate)
+
+### Subscription Management Endpoints ⭐
+
+**GET `/admin/clients/with-subscriptions/:status`** - Get all clients with subscriptions (optimized single call)
+- **Status:** `active` | `inactive`
+- **Response:** Array of clients with subscription objects
+- **Fields:** `id`, `company_name`, `subscription` (SubscriptionObject | null), `has_subscription`
+
+**GET `/admin/clients/:clientId/subscription`** - Get specific client subscription
+- **Response:** `{ success: boolean, subscription: SubscriptionObject | null }`
+
+**POST `/admin/clients/:clientId/subscription/status`** - Update subscription status
+- **Body:** `{ status: 'active' | 'expired' | 'canceled' }`
+- **Response:** `{ success: boolean, subscription: SubscriptionObject }`
+
+**POST `/admin/clients/:clientId/subscription/plan`** - Update subscription plan
+- **Body:** `{ plan: 'professional' | 'business' | 'enterprise' }`
+- **Response:** `{ success: boolean, subscription: SubscriptionObject }`
+
+### Scraper & Embeddings Endpoints
 
 **POST `/scraper/crawl-domain`** - Initiate domain scraping
-- Headers: `x-api-key`
-- Body: `{ websiteUrl: string }`
-- Response: `{ jobId: string }`
+- **Headers:** `x-api-key`
+- **Body:** `{ websiteUrl: string }`
+- **Response:** `{ jobId: string }`
 
 **GET `/scraper/job/:jobId`** - Get scraping job status
-- Headers: `x-api-key`
-- Response: `{ status: 'processing' | 'completed' | 'failed' }`
+- **Headers:** `x-api-key`
+- **Query:** `client_id` (optional for tracking)
+- **Response:** `{ status: 'processing' | 'completed' | 'failed' }`
+
+**POST `/scraper/scrape-batch`** - Rescrape multiple URLs (client panel)
+- **Headers:** `Authorization: Bearer <session_token>`
+- **Body:** `{ urls: string[] }`
+- **Response:** `{ successCount: number, results: Array }`
+
+**GET `/scraper/content`** - Get list of scraped URLs (client access)
+- **Response:** `{ content: Array<{ url, pageTitle, totalChunks, scrapedAt }> }`
+
+**GET `/scraper/chunk-stats`** - Get statistics about scraped content (client access)
+- **Response:** `{ totalUrls, totalChunks, totalWords, urlStats: object }`
 
 **POST `/embeddings/generate`** - Generate embeddings for scraped content
-- Headers: `x-api-key`
-- Response: Initiates background embedding job
+- **Headers (Admin):** `x-api-key`
+- **Headers (Client):** `Authorization: Bearer <session_token>`
+- **Response:** Initiates background embedding job
 
 **GET `/embeddings/stats`** - Get embeddings generation progress
-- Headers: `x-api-key`
-- Response: `{ stats: { percentComplete: 0-100, pendingEmbeddings: number, totalChunks: number, withEmbeddings: number } }`
+- **Headers (Admin):** `x-api-key`
+- **Headers (Client):** `Authorization: Bearer <session_token>`
+- **Query:** `client_id` (optional for admin)
+- **Response:** `{ stats: { percentComplete: 0-100, pendingEmbeddings, totalChunks, withEmbeddings } }`
 
 ## 📦 Dependencies
 
@@ -269,29 +422,54 @@ The axios instance automatically:
 
 ## ✅ Completed Features
 
+### Authentication & Security
 - ✅ Supabase authentication setup with email/password provider
 - ✅ Session management with automatic token persistence
 - ✅ Role-based access control (super_admin, client)
 - ✅ Protected route component with role validation
-- ✅ Dual dashboard layouts (Super Admin & Client)
-- ✅ Login form with professional UI and keyboard support
 - ✅ Axios interceptors for automatic token attachment
 - ✅ Axios interceptors for 401 handling and redirect
 - ✅ Public axios instance (separate from authenticated)
 - ✅ NoAccess (403) page with context-aware messages
-- ✅ Dynamic user profile display in sidebars
 - ✅ Environment-based configuration
 - ✅ Memory leak prevention in AuthContext
-- ✅ Proper loading state management
-- ✅ Centered loading spinner with fixed positioning
-- ✅ Multi-step client creation wizard (5 steps with progress tracking)
+- ✅ Dynamic user profile display in sidebars
+
+### Admin Dashboard Features
+- ✅ Dual dashboard layouts (Super Admin & Client)
+- ✅ Login form with professional UI and keyboard support
+- ✅ Multi-step client creation wizard (6 steps with subscription config)
 - ✅ Domain scraping with real-time progress (max 10 minutes)
 - ✅ AI embeddings generation with progress tracking (max 6 minutes)
 - ✅ Client management dashboard with CRUD operations
 - ✅ View client details with embed script display
 - ✅ Rescrape and re-embed functionality for existing clients
-- ✅ Real-time progress bar visualization for rescrape operations
+- ✅ Real-time progress bar visualization for operations
 - ✅ Success/error alerts with user feedback
+- ✅ Subscription management system for clients
+- ✅ Subscription status updates (active/expired/canceled)
+- ✅ Subscription plan management (professional/business/enterprise)
+- ✅ Admin support tickets interface with filtering
+- ✅ Proper loading state management
+- ✅ Centered loading spinner with fixed positioning
+
+### Client Dashboard Features
+- ✅ Client dashboard with knowledge base statistics
+- ✅ Chatbot configuration interface (colors, position, welcome message)
+- ✅ Web scraper management with URL listing
+- ✅ Rescrape functionality with auto-embeddings generation
+- ✅ Conversations viewer with message thread display
+- ✅ Client-side filtering and pagination
+- ✅ Quick action shortcuts (My Chatbot, Analytics, etc.)
+- ✅ Recent updates and getting started guidance
+
+### UI/UX Enhancements
+- ✅ Coming Soon pages for unfinished features with custom icons
+- ✅ Admin sidebar navigation with proper menu structure
+- ✅ Client sidebar navigation with organized sections
+- ✅ Custom scrollbar styling (webkit & Firefox compatible)
+- ✅ Improved layout margins and max-width constraints
+- ✅ Enhanced visual hierarchy and spacing
 
 ## 🚧 Future Enhancements
 
@@ -431,5 +609,12 @@ For issues or questions, contact the development team or file an issue in the re
 
 ---
 
-**Last Updated:** 2024
+**Last Updated:** February 9, 2026
 **Status:** Production Ready ✅
+**Latest Feature Set:** Dashboard Enhancements v2.0
+  - Subscription Management System
+  - Support Tickets Interface
+  - Client Conversation Viewer
+  - Chatbot Configuration UI
+  - Web Scraper Management
+  - Enhanced Layouts & UX

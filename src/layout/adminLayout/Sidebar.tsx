@@ -30,16 +30,16 @@ const navSections: NavSection[] = [
             { label: "Clients", path: "/SA/clients" },
             { label: "Chatbots", path: "/SA/chatbots" },
             { label: "Subscriptions", path: "/SA/subscriptions" },
-            { label: "Billing & Revenue", path: "/SA/usage" },
+            { label: "Billing & Revenue", path: "/SA/billing" },
             { label: "Usage", path: "/SA/usage" },
         ],
     },
     {
         title: "SUPPORT",
         items: [
-            { label: "Tickets", path: "/SA/clients" },
-            { label: "Active Logs", path: "/SA/chatbots" },
-            { label: "User Feedback", path: "/SA/subscriptions" },
+            { label: "Tickets", path: "/SA/support" },
+            { label: "Active Logs", path: "/SA/active-logs" },
+            { label: "User Feedback", path: "/SA/user-feedback" },
         ],
     },
     {
@@ -47,7 +47,7 @@ const navSections: NavSection[] = [
         items: [
 
             { label: "Settings", path: "/SA/settings" },
-            { label: "API Management", path: "/SA/integrations" },
+            { label: "API Management", path: "/SA/api-management" },
             { label: "Integrations", path: "/SA/integrations" },
             { label: "Security", path: "/SA/security" },
         ],

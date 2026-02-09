@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axiosInstance from '../../utils/instance';
+import publicAxios from '../../utils/publicInstance';
 import Drawer from '../../components/Drawer';
 import AddClient from './AddClient';
 import Button from '../../components/Button';
@@ -154,7 +155,7 @@ const Clients: React.FC = () => {
       });
 
       // First, rescrape the domain
-      const scrapeResponse = await axiosInstance.post(
+      const scrapeResponse = await publicAxios.post(
         "/scraper/crawl-domain",
         { websiteUrl: client.website_url },
         { headers: { "x-api-key": client.api_key } }
@@ -197,7 +198,7 @@ const Clients: React.FC = () => {
       attempts++;
 
       try {
-        const response = await axiosInstance.get(`/scraper/job/${jobId}`, {
+        const response = await publicAxios.get(`/scraper/job/${jobId}?client_id=${clientId}`, {
           headers: { 'x-api-key': apiKey }
         });
 
@@ -256,7 +257,7 @@ const Clients: React.FC = () => {
 
   const triggerReembedding = async (apiKey: string, clientId: number) => {
     try {
-      const response = await axiosInstance.post(
+      const response = await publicAxios.post(
         "/embeddings/generate",
         {},
         { headers: { 'x-api-key': apiKey } }
@@ -286,7 +287,7 @@ const Clients: React.FC = () => {
       attempts++;
 
       try {
-        const response = await axiosInstance.get('/embeddings/stats', {
+        const response = await publicAxios.get(`/embeddings/stats?client_id=${clientId}`, {
           headers: { 'x-api-key': apiKey }
         });
 

@@ -35,9 +35,14 @@ export const sidebarMenu = [
                 icon: "💳",
             },
             {
-                label: "Billing",
-                path: "/SA/usage",
+                label: "Billing & Revenue",
+                path: "/SA/billing",
                 icon: "💰",
+            },
+            {
+                label: "Usage",
+                path: "/SA/usage",
+                icon: "📊",
             },
         ],
     },
