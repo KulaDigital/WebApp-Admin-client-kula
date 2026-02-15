@@ -3,7 +3,7 @@ import Button from '../../components/Button';
 import Card from '../../components/FormCard';
 import Input from '../../components/FormInput';
 import Select from '../../components/FormSelect';
-import axiosInstance from '../../utils/instance';
+import { adminClientsApi, adminUsersApi } from '../../api';
 
 interface AddUserProps {
   close: () => void;
@@ -32,9 +32,9 @@ const AddUser: React.FC<AddUserProps> = ({ close }) => {
   useEffect(() => {
     const fetchClients = async () => {
       try {
-        const response = await axiosInstance.get('/admin/clients/status/active');
-        if (response.data.success) {
-          setClients(response.data.clients);
+        const response = await adminClientsApi.getClientsByStatus('active');
+        if (response.success) {
+          setClients(response.clients);
         }
       } catch (err) {
         console.error('Error fetching clients:', err);
@@ -92,9 +92,9 @@ const AddUser: React.FC<AddUserProps> = ({ close }) => {
         phone_number: formData.phoneNumber || undefined,
       };
 
-      const response = await axiosInstance.post('/admin/users', payload);
+      const response = await adminUsersApi.createUser(payload);
 
-      if (response.data.success) {
+      if (response.success) {
         alert('User created successfully!');
         close();
       }
@@ -159,7 +159,7 @@ const AddUser: React.FC<AddUserProps> = ({ close }) => {
 
       {/* CLIENT NOTE */}
       {formData.role === 'Client' && (
-        <div className="flex items-start gap-3 p-4 border border-[var(--color-warning)] bg-[#FFFBEB] rounded-lg">
+        <div className="flex items-start gap-3 p-4 border border-[var(--color-warning)] bg-[var(--color-warning-light, rgba(245, 158, 11, 0.1))] rounded-lg">
           <span className="text-lg flex-shrink-0">ℹ️</span>
           <div>
             <p className="font-medium text-sm text-[var(--color-warning)]">Note</p>

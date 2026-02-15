@@ -1,5 +1,5 @@
-import ClientSidebar from "./clientSidebar";
-import ClientHeder from "./clientHeder";
+import ClientSidebar from "./ClientSidebar";
+import ClientHeder from "./ClientHeder";
 import { Outlet } from "react-router-dom";
 
 const AdminLayout: React.FC = () => {

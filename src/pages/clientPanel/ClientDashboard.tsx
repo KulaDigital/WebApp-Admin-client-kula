@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axiosInstance from '../../utils/instance';
+import { clientApi, fetchScraperData } from '../../api';
 import StatCard from '../../components/StatCard';
 import type { StatCardProps } from '../../types';
 
@@ -10,30 +10,48 @@ interface QuickAction {
   path: string;
 }
 
+interface SubscriptionData {
+  plan: string;
+  period: string;
+  status: string;
+  is_trial: boolean;
+  started_at: string;
+  ends_at: string;
+}
+
 const ClientDashboard: React.FC = () => {
   const [stats, setStats] = useState<StatCardProps[]>([]);
+  const [subscription, setSubscription] = useState<SubscriptionData | null>(null);
 
   const quickActions: QuickAction[] = [
-    { icon: '🤖', label: 'Create Chatbot', description: 'Build a new AI chatbot', path: '/client/chatbot' },
-    { icon: '💬', label: 'View Conversations', description: 'Check recent conversations', path: '/client/conversations' },
-    { icon: '⚙️', label: 'Configuration', description: 'Adjust chatbot settings', path: '/client/chatbot-config' },
-    { icon: '📊', label: 'Analytics', description: 'View performance metrics', path: '/client/analytics' },
+    { icon: 'chatbot', label: 'Create Chatbot', description: 'Build a new AI chatbot', path: '/client/chatbot' },
+    { icon: 'chat', label: 'View Conversations', description: 'Check recent conversations', path: '/client/conversations' },
+    { icon: 'settings', label: 'Configuration', description: 'Adjust chatbot settings', path: '/client/chatbot-config' },
+    { icon: 'stats', label: 'Analytics', description: 'View performance metrics', path: '/client/analytics' },
   ];
 
   useEffect(() => {
     fetchClientStats();
+    fetchSubscriptionData();
   }, []);
+
+  const fetchSubscriptionData = async () => {
+    try {
+      const response = await clientApi.getClientProfile();
+      if (response.subscription) {
+        setSubscription(response.subscription);
+      }
+    } catch (err) {
+      console.error('Error fetching subscription data:', err);
+    }
+  };
 
   const fetchClientStats = async () => {
     try {
-      // Fetch content list (URLs and metadata)
-      const contentResponse = await axiosInstance.get('/scraper/content');
-      const contentList = contentResponse.data.content || [];
-      
-      // Fetch chunk statistics (word counts and stats)
-      const statsResponse = await axiosInstance.get('/scraper/chunk-stats');
-      // Note: chunk-stats returns data directly, not wrapped in 'stats' property
-      const statsData = statsResponse.data || {};
+      // Use batch endpoint to fetch both content and stats in parallel
+      const { content, stats } = await fetchScraperData();
+      const contentList = content.content || [];
+      const statsData = stats || {};
       
       // Extract data from responses
       const totalUrls = statsData.totalUrls || contentList.length;
@@ -45,7 +63,7 @@ const ClientDashboard: React.FC = () => {
       // Build stats for display - knowledge base focused metrics
       setStats([
         {
-          icon: '🕷️',
+          icon: 'search',
           label: 'Scraped URLs',
           value: totalUrls.toString(),
           change: totalChunks > 0 ? `${totalChunks} chunks indexed` : 'No content indexed',
@@ -53,7 +71,7 @@ const ClientDashboard: React.FC = () => {
           iconColor: 'purple',
         },
         {
-          icon: '📄',
+          icon: 'analytics',
           label: 'Total Chunks',
           value: totalChunks.toString(),
           change: `${averageChunksPerUrl?.toFixed(1) || '0'} avg per URL`,
@@ -93,11 +111,50 @@ const ClientDashboard: React.FC = () => {
   };
 
   const getFallbackStats = (): StatCardProps[] => [
-    { icon: '🕷️', label: 'Scraped URLs', value: '0', change: 'No content indexed', changeType: 'negative', iconColor: 'purple' },
-    { icon: '📄', label: 'Total Chunks', value: '0', change: '0 avg per URL', changeType: 'negative', iconColor: 'blue' },
-    { icon: '📚', label: 'Total Words', value: '0', change: '0 avg per chunk', changeType: 'negative', iconColor: 'orange' },
-    { icon: '⚡', label: 'Knowledge Base', value: '○', change: 'Add content', changeType: 'negative', iconColor: 'green' },
+    { icon: 'search', label: 'Scraped URLs', value: '0', change: 'No content indexed', changeType: 'negative', iconColor: 'purple' },
+    { icon: 'analytics', label: 'Total Chunks', value: '0', change: '0 avg per URL', changeType: 'negative', iconColor: 'blue' },
+    { icon: 'stats', label: 'Total Words', value: '0', change: '0 avg per chunk', changeType: 'negative', iconColor: 'orange' },
+    { icon: 'trending', label: 'Knowledge Base', value: '○', change: 'Add content', changeType: 'negative', iconColor: 'green' },
   ];
+
+  const getSubscriptionBadgeColor = (plan: string) => {
+    switch (plan?.toLowerCase()) {
+      case 'professional':
+        return 'bg-blue-100 border-blue-300 text-blue-700';
+      case 'business':
+        return 'bg-green-100 border-green-300 text-green-700';
+      case 'enterprise':
+        return 'bg-yellow-100 border-yellow-300 text-yellow-700';
+      default:
+        return 'bg-blue-100 border-blue-300 text-blue-700';
+    }
+  };
+
+  const getShortPlanName = (plan: string) => {
+    switch (plan?.toLowerCase()) {
+      case 'professional':
+        return 'Professional';
+      case 'business':
+        return 'Business';
+      case 'enterprise':
+        return 'Enterprise';
+      default:
+        return 'Plan';
+    }
+  };
+
+  const formatPlanName = (plan: string, isTrial: boolean) => {
+    const planName = getShortPlanName(plan);
+    return isTrial ? `${planName} (Trial)` : planName;
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric' 
+    });
+  };
 
   return (
     <div className="flex flex-col gap-5 pb-20">
@@ -110,6 +167,27 @@ const ClientDashboard: React.FC = () => {
           Here's an overview of your chatbot performance and usage.
         </p>
       </div>
+
+      {/* Subscription Card */}
+      {subscription && (
+        <div className={`border border-current rounded-lg p-6 ${getSubscriptionBadgeColor(subscription.plan)}`}>
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <h3 className="text-lg font-bold">{formatPlanName(subscription.plan, subscription.is_trial)} Plan</h3>
+                <span className={`text-xs font-bold px-3 py-1 rounded-full border ${getSubscriptionBadgeColor(subscription.plan)}`}>
+                  {subscription.status?.toUpperCase()}
+                </span>
+              </div>
+              <p className="text-sm opacity-75">
+                {subscription.period && `Billed ${subscription.period}`}
+                {subscription.ends_at && ` • Renews ${formatDate(subscription.ends_at)}`}
+              </p>
+            </div>
+            <div className="text-3xl">📋</div>
+          </div>
+        </div>
+      )}
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">

@@ -1,5 +1,6 @@
 // components/StatCard.tsx
 import React from 'react';
+import Icon from './Icon';
 import type { StatCardProps } from '../types';
 
 const StatCard: React.FC<StatCardProps> = ({ 
@@ -27,8 +28,8 @@ const StatCard: React.FC<StatCardProps> = ({
     <div className="bg-white border border-[var(--color-border)] rounded-lg p-6 hover:shadow-md transition-shadow">
       {/* Icon */}
       <div className="flex items-center justify-between mb-4">
-        <div className={`w-12 h-12 rounded-md ${iconColors[iconColor]} flex items-center justify-center text-2xl`}>
-          {icon}
+        <div className={`w-12 h-12 rounded-md ${iconColors[iconColor]} flex items-center justify-center`}>
+          <Icon name={icon} size="md" decorative />
         </div>
       </div>
 

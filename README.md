@@ -24,6 +24,12 @@ This project implements a comprehensive admin and client management system with:
 - ✅ Secure axios interceptors with 401 handling
 - ✅ Environment-based configuration
 
+### API Layer & Integration
+- ✅ Centralized API layer with organized endpoint groups (`src/api/index.ts`) ⭐ NEW
+- ✅ Comprehensive documentation for all API endpoints
+- ✅ Consistent error handling and response formats
+- ✅ Batch/utility endpoints for optimized data fetching
+
 ### Admin Panel
 - ✅ Dashboard with key metrics and overview
 - ✅ Multi-step client creation wizard with subscriptions
@@ -33,29 +39,44 @@ This project implements a comprehensive admin and client management system with:
 - ✅ Professional navigation menu with organized sections
 
 ### Client Portal
-- ✅ Dashboard with knowledge base statistics
-- ✅ Chatbot widget configuration (colors, position, greeting)
+- ✅ Dashboard with knowledge base statistics & subscription display ⭐ ENHANCED
+- ✅ Chatbot widget configuration with embed script & integration guide ⭐ ENHANCED
 - ✅ Web scraper management with rescraping
 - ✅ Conversation history viewer with pagination
 - ✅ Quick action shortcuts for common tasks
+- ✅ **Leads Management** - Capture and track chatbot-generated leads ⭐ NEW
+  - Search and filter leads by status (new, contacted, qualified, won, lost)
+  - Real-time lead status updates
+  - Pagination for large lead lists
+  - Contact information management (name, email, phone, company)
+- ✅ Dynamic subscription badge showing plan and trial status
 
 ### UI/UX
+- ✅ **Icon System** - SVG-based reusable Icon component ⭐ NEW
+  - Semantic icon names (chatbot, analytics, settings, etc.)
+  - Configurable sizes (xs, sm, md, lg, xl, 2xl)
+  - Accessibility support with aria labels
+  - Replaces emoji usage throughout the app
 - ✅ Dynamic Coming Soon pages with custom icons
 - ✅ Custom scrollbar styling (Chrome & Firefox)
 - ✅ Improved layout spacing and max-width constraints
 - ✅ Professional loading states and spinners
 - ✅ Access denied (403) handling with context
 - ✅ Glassmorphic design with TailwindCSS and Material-UI
+- ✅ Enhanced color palette with secondary colors and warning-light
 
 ## 🏗️ Project Structure
 
 ```
 src/
+├── api/                        # ⭐ NEW: Centralized API layer with organized endpoints
+│   └── index.ts                # Authentication, Client, Admin, Public API endpoints
 ├── components/
-│   ├── Button.tsx              # Reusable button component
+│   ├── Icon.tsx                # ⭐ NEW: SVG-based reusable icon component
+│   ├── Button.tsx              # Reusable button component (enhanced with CSS vars)
 │   ├── Drawer.tsx              # Drawer component
-│   ├── ProtectedRoute.tsx       # Route guard with role validation ⭐
-│   ├── StatCard.tsx            # Statistics card component
+│   ├── ProtectedRoute.tsx       # Route guard with role validation
+│   ├── StatCard.tsx            # Statistics card component (uses Icon)
 │   ├── FormCard.tsx            # Form card wrapper
 │   ├── FormInput.tsx           # Form input component
 │   ├── FormPosition.tsx        # Position selector component
@@ -66,126 +87,175 @@ src/
 │   ├── EditModal.tsx           # Edit modal component
 │   └── ViewModal.tsx           # View details modal
 ├── context/
-│   └── AuthContext.tsx         # Authentication provider with session & role management ⭐
+│   └── AuthContext.tsx         # Authentication provider (uses centralized API)
 ├── layout/
 │   ├── adminLayout/
-│   │   ├── Layout.tsx          # Admin dashboard layout (enhanced with max-width)
+│   │   ├── Layout.tsx          # Admin dashboard layout
 │   │   ├── Sidebar.tsx         # Admin sidebar with organized menu
-│   │   ├── SidebarMenu.tsx     # Admin navigation menu items
+│   │   ├── SidebarMenu.tsx     # Admin navigation menu items (uses semantic icons)
 │   │   └── TopBar.tsx          # Admin top navigation
 │   └── clientLayout/
-│       ├── ClientLayout.tsx    # Client dashboard layout (enhanced with max-width)
+│       ├── ClientLayout.tsx    # Client dashboard layout
 │       ├── ClientHeder.tsx     # Client header
-│       └── ClientSidebar.tsx   # Client sidebar with organized menu
+│       └── ClientSidebar.tsx   # Client sidebar with subscription badge & dynamic menu
 ├── login/
-│   └── Login.tsx               # Email/password login form ⭐
+│   └── Login.tsx               # Email/password login form (uses Icon component)
 ├── pages/
-│   ├── ComingSoon.tsx          # Coming Soon component with custom icons ⭐
+│   ├── ComingSoon.tsx          # Coming Soon component (uses Icon component)
 │   ├── adminPanel/
-│   │   ├── Dashboard.tsx
-│   │   ├── Analytics.tsx
-│   │   ├── Clients.tsx
-│   │   ├── Users.tsx
-│   │   ├── Subscription.tsx    # Subscription management with modal
-│   │   ├── Tickets.tsx         # Support tickets listing ⭐
-│   │   ├── Settings.tsx
-│   │   ├── Security.tsx
-│   │   ├── Intergrations.tsx
-│   │   └── AddClient.tsx       # 6-step client creation with subscriptions
+│   │   ├── Dashboard.tsx       # (uses Icon component for stats)
+│   │   ├── Analytics.tsx       # (uses Icon component for stats)
+│   │   ├── Clients.tsx         # (uses centralized API)
+│   │   ├── Users.tsx           # (uses centralized API)
+│   │   ├── Subscription.tsx    # Subscription management
+│   │   ├── Tickets.tsx         # Support tickets listing
+│   │   ├── Settings.tsx        # Platform settings
+│   │   ├── Security.tsx        # Security settings
+│   │   ├── Intergrations.tsx   # (uses Icon component)
+│   │   ├── Chatbot.tsx         # (uses Icon component for stats)
+│   │   ├── Billing.tsx         # Billing Coming Soon
+│   │   ├── Usage.tsx           # Usage Coming Soon (uses Icon component)
+│   │   └── AddClient.tsx       # Client creation wizard
 │   ├── clientPanel/
-│   │   ├── ClientDashboard.tsx # Dashboard with stats
-│   │   ├── ChatbotConfiguration.tsx  # Widget configuration ⭐
-│   │   ├── Conversations.tsx   # Message thread viewer ⭐
-│   │   └── WebScraper.tsx      # URL management with rescraping ⭐
-│   └── NoAccess.tsx            # 403 error page with sign-out option ⭐
+│   │   ├── ClientDashboard.tsx # Dashboard with stats & subscription display ⭐ ENHANCED
+│   │   ├── ChatbotConfiguration.tsx  # Widget config with embed script & guide ⭐ ENHANCED
+│   │   ├── Conversations.tsx   # Conversation viewer
+│   │   ├── WebScraper.tsx      # URL management
+│   │   ├── Leads.tsx           # ⭐ NEW: Leads management & tracking
+│   │   └── Tickets.tsx         # Support tickets Coming Soon
+│   └── NoAccess.tsx            # 403 error page
 ├── utils/
-│   ├── supabase.ts             # Supabase client initialization ⭐
-│   ├── instance.ts             # Authenticated axios instance with interceptors ⭐
-│   ├── publicInstance.ts       # Public axios instance (no auth) ⭐
-│   ├── subscriptionApi.ts      # Subscription API utilities ⭐
+│   ├── supabase.ts             # Supabase client initialization
+│   ├── instance.ts             # Authenticated axios instance
+│   ├── publicInstance.ts       # Public axios instance
+│   ├── subscriptionApi.ts      # Subscription utilities
 │   ├── cssVariables.ts         # CSS variable getters
 │   └── API_CLIENTS_GUIDE.ts    # API client usage documentation
-├── App.tsx                     # Main app with routing and AuthProvider wrapper
-├── App.css                     # Global styles (with custom scrollbars)
-├── types.tsx                   # TypeScript interfaces and types
+├── App.tsx                     # Main app with routing (uses centralized API)
+├── App.css                     # Global styles with enhanced color palette
+├── types.tsx                   # TypeScript interfaces
 ├── main.tsx                    # React entry point
 ├── tailwind.config.ts          # TailwindCSS configuration
 └── index.html                  # HTML template
 ```
 
+
 ### Key Dashboard Enhancements (Latest)
 
-**New Coming Soon Component**
-- Dynamic Coming Soon pages with custom SVG icons
-- Custom icons for Analytics, Chatbots, Billing, Usage, API Management, Settings, Security, Tickets, Logs, and Feedback
-- Animated icon bouncing effect with gradient backgrounds
-- Feature development status display
+**🎉 NEW: Icon System Component** ⭐
+- SVG-based reusable `Icon` component in `src/components/Icon.tsx`
+- Semantic icon names replacing all emojis (chatbot, analytics, settings, etc.)
+- Configurable sizes: xs, sm, md, lg, xl, 2xl
+- Accessibility support with aria labels and decorative flag
+- 50+ built-in icons mapped to common application functions
+- Easy to extend with new icons
+- All existing components migrated to use Icon component
 
-**Enhanced Admin Routes**
-- New Admin panel routes: `/SA/billing`, `/SA/support`, `/SA/active-logs`, `/SA/user-feedback`, `/SA/api-management`
-- All placeholder routes now use ComingSoon component instead of simple components
-- Organized navigation menu with 4 sections (MAIN, MANAGEMENT, SUPPORT, SYSTEM)
+**🎉 NEW: Centralized API Layer** ⭐
+- New `src/api/index.ts` with organized endpoint groups
+- Clean separation of concerns: Auth, Client, Admin, Public APIs
+- Comprehensive JSDoc documentation for each endpoint
+- Batch endpoints for optimized data fetching
+- Used throughout the app for consistent API access
+- AuthContext updated to use centralized API
 
-**Enhanced Client Routes**
-- New client portal routes: `/client/chatbot`, `/client/chatbot-config`, `/client/conversations`, `/client/web-scraper`
-- Additional routes: `/client/test-chatbot`, `/client/tickets`, `/client/active-logs`, `/client/user-feedback`, `/client/api-management`
-- Organized sidebar with 4 sections (MAIN, TRAINING, SUPPORT, SYSTEM)
+**🎉 NEW: Leads Management Page** ⭐
+- New client portal page: `/client/leads`
+- **Features:**
+  - View all captured leads from chatbot conversations
+  - Search leads by name, email, or company
+  - Filter by status: New, Contacted, Qualified, Won, Lost
+  - Real-time status updates with dropdown selection
+  - Contact information display (email, phone, company)
+  - Pagination for large lead lists
+  - Lead creation timestamp tracking
+  - Responsive table design
+- **Stats Cards:** Total leads, New, Qualified, Won breakdown
+- **Error Handling:** 403 access control, 404 handling, graceful fallbacks
+- **API Integration:** Uses centralized API layer
 
-**Subscription Management** ⭐
-- Backend API integration for managing client subscriptions
-- Real-time subscription status updates (active/expired/canceled)
-- Subscription plan management (professional/business/enterprise)
-- Support for trial periods with locked plan/period
-- Modal interface for managing individual client subscriptions
-- Comprehensive subscription utilities in `subscriptionApi.ts`
+**🎉 ENHANCED: ChatbotConfiguration Page** ⭐
+- Added embed script display and copy functionality
+- New integration guide modal with step-by-step instructions
+- **Features:**
+  - Copy-to-clipboard button for embed script
+  - Integration documentation modal
+  - Example HTML implementation
+  - Domain placement recommendations
+  - HTTPS/HTTP guidance
+  - Important notes and warnings
+  - Support contact information
+- Extracted embed data from client response for display
 
-**Support Tickets Component** ⭐
-- Support ticket listing for admin panel
-- Filter by status (all, open, in-progress, resolved)
-- Color-coded priority indicators
-- Created date tracking
-- Professional table layout
+**🎉 ENHANCED: ClientDashboard** ⭐
+- Added subscription information display
+- **Features:**
+  - Subscription plan badge (Professional, Business, Enterprise)
+  - Trial status indicator
+  - Billing period information
+  - Renewal date display
+  - Color-coded plan badges
+  - Subscription status tracking
+- Refactored to use batch API endpoint for optimized data fetching
+- Uses `fetchScraperData()` utility for parallel requests
 
-**Chatbot Configuration** ⭐
-- Client-facing widget customization interface
-- Color picker for primary and secondary colors
-- Widget position selector (bottom-right, bottom-left)
-- Welcome message customization (200 char limit)
-- Save and reset functionality with success feedback
+**🎉 ENHANCED: ClientSidebar** ⭐
+- Dynamic subscription badge showing plan name and trial status
+- Refactored navigation structure into 4 sections: MAIN, MANAGE, SUPPORT, SYSTEM
+- **Features:**
+  - Added "Leads" menu item in MANAGE section
+  - Plan-specific color coding for badges
+  - Real-time subscription data fetching on mount
+  - Graceful fallback for loading state
+  - Short plan names display (PRO, BIZ, ENT)
+- Uses centralized API layer (`clientApi.getClientProfile()`)
 
-**Web Scraper Component** ⭐
-- URL management interface for client panel
-- Rescrape functionality with automatic embeddings
-- Statistics display (chunks, words per URL)
-- Success/error feedback messages
-- Real-time progress indication with spinning icon
+**🎨 ENHANCED: Color Palette** ⭐
+- New CSS variables added to `App.css`:
+  - `--color-secondary-hover: #062d5c` - Secondary button hover state
+  - `--color-secondary-light: rgba(10, 37, 64, 0.1)` - Secondary light variant
+  - `--color-warning-light: rgba(245, 158, 11, 0.1)` - Warning light background
+- All components updated to use CSS variables for consistency
+- Button component uses new secondary color variables
+- Warning alerts use new warning-light color
 
-**Conversations Viewer** ⭐
-- View conversation history with pagination
-- Filter conversations by status (all, active, closed)
-- Message thread display with timestamps
-- Visitor ID tracking and conversation details
-- Clean message layout with role-based styling
+**📦 Icon Replacements Throughout App**
+- **Admin Routes:** Dashboard (📊 → dashboard), Analytics (📈 → analytics), etc.
+- **StatCard Component:** All stat cards now use semantic icon names
+- **ComingSoon Pages:** All coming soon icons replaced with semantic names
+- **Login Form:** Chat emoji (💬) replaced with Icon component
+- **Integrations Page:** All integration icons updated
+- **Navigation Menus:** Sidebar icons all converted to semantic names
+- **Usage Page:** Added icon support for API calls, storage, bandwidth
 
-**Client Dashboard Stats** ⭐
-- Knowledge base statistics (scraped URLs, chunks, words)
-- Quick action shortcuts to common features
-- Recent updates section with getting started tips
-- Responsive grid layout with icon indicators
+**New Coming Soon Icon Names:**
+- analytics, chatbot, billing, stats, integrations, keys, settings, security, support, logs, feedback, chat, search, trending, people, card, link, api, storage
 
-**Layout Improvements**
-- Admin layout main content uses `flex-1` for proper spacing
-- Client layout mirrors admin layout improvements
-- Max-width container (max-w-7xl) for optimal readability
-- Enhanced padding (px-7 py-6) and spacing throughout
-- Removed display: flex from root element for better responsiveness
+**Layout & Navigation Updates**
+- Client Sidebar menu reorganized: MAIN, MANAGE, SUPPORT, SYSTEM (was: MAIN, TRAINING, SUPPORT, SYSTEM)
+- Added "Leads" to MANAGE section of client menu
+- Admin menu updated with consistent icon usage
+- Improved visual hierarchy with semantic icons
 
-**UI/UX Enhancements**
-- Custom scrollbar styling for webkit (Chrome/Safari) and Firefox
-- Thin scrollbar with gray styling (#D1D5DB)
-- Hover state with darker gray (#9CA3AF)
-- Transparent background for scrollbar track
-- Improved overall visual hierarchy and spacing
+**API Integration Layer Changes**
+- AuthContext refactored to use `authApi.getMe()` from centralized layer
+- Clients page uses `adminClientsApi` functions
+- Users page uses `adminUsersApi` functions
+- Dashboard components use centralized API
+- Removed direct axios calls in favor of API layer functions
+
+**New Coming Soon Features** 
+- All admin routes now properly integrated with ComingSoon pages
+- All client routes now properly integrated with ComingSoon pages
+- Consistent icon usage across all coming soon pages
+
+**Bug Fixes & Code Quality**
+- Fixed case sensitivity in client layout imports (ClientSidebar, ClientHeder)
+- Removed unused imports in various components
+- Improved error handling with try-catch blocks
+- Better type safety with TypeScript interfaces
+- Replaced unused loop variables with underscore naming convention
+
 
 ### Key Files
 
@@ -197,14 +267,30 @@ src/
 - `src/utils/instance.ts` - Authenticated HTTP client with token attachment and 401 handling
 - `src/pages/NoAccess.tsx` - Access denied page with context-aware messaging
 
-⭐ **Dashboard Features (New):**
-- `src/pages/ComingSoon.tsx` - Coming Soon component with customizable content and icons
+⭐ **NEW API & Integration:**
+- `src/api/index.ts` - **Centralized API layer with 5 endpoint groups** ⭐ NEW
+  - authApi (authentication endpoints)
+  - clientApi (client data & scraper endpoints)
+  - adminClientsApi (client management endpoints)
+  - adminUsersApi (user management endpoints)
+  - adminSupportApi (support endpoints)
+  - publicApi (public endpoints)
+
+⭐ **NEW UI Components:**
+- `src/components/Icon.tsx` - **SVG-based reusable icon system** ⭐ NEW
+
+⭐ **Dashboard Features:**
+- `src/pages/ComingSoon.tsx` - Coming Soon component with Icon support
 - `src/utils/subscriptionApi.ts` - Subscription management utilities
 - `src/pages/adminPanel/Subscription.tsx` - Admin subscription management interface
 - `src/pages/adminPanel/Tickets.tsx` - Support tickets listing and filtering
-- `src/pages/clientPanel/ChatbotConfiguration.tsx` - Widget customization interface
+- `src/pages/clientPanel/ChatbotConfiguration.tsx` - Widget customization with embed script guide
 - `src/pages/clientPanel/WebScraper.tsx` - URL and scraping management
 - `src/pages/clientPanel/Conversations.tsx` - Conversation viewer with pagination
+- `src/pages/clientPanel/Leads.tsx` - **Lead management page** ⭐ NEW
+- `src/layout/clientLayout/ClientSidebar.tsx` - Client sidebar with subscription badge
+- `src/layout/clientLayout/ClientLayout.tsx` - Client layout
+- `src/pages/clientPanel/ClientDashboard.tsx` - Client dashboard with subscription display
 
 ## 🔐 Authentication Flow
 
@@ -435,6 +521,29 @@ The axios instance automatically:
 - ✅ Memory leak prevention in AuthContext
 - ✅ Dynamic user profile display in sidebars
 
+### API Layer & Integration ⭐
+- ✅ Centralized API layer (`src/api/index.ts`) with organized endpoint groups
+- ✅ Authentication endpoints (getMe)
+- ✅ Client API endpoints (profile, conversations, scraper data, leads)
+- ✅ Admin client management endpoints (CRUD operations)
+- ✅ Admin user management endpoints (CRUD operations)
+- ✅ Admin support endpoints (tickets, etc.)
+- ✅ Public API endpoints (client creation)
+- ✅ Batch utility endpoints (fetchScraperData)
+- ✅ Comprehensive JSDoc documentation for all endpoints
+
+### Icon System ⭐
+- ✅ SVG-based reusable Icon component with 50+ icons
+- ✅ Semantic icon names replacing all emojis
+- ✅ Configurable sizes (xs, sm, md, lg, xl, 2xl)
+- ✅ Accessibility support (aria-hidden, aria-label)
+- ✅ Migration of all existing components to use Icon
+- ✅ StatCard component using Icon
+- ✅ ComingSoon pages using Icon
+- ✅ Login form using Icon
+- ✅ Navigation menus using Icon
+- ✅ Admin and client dashboards using Icon
+
 ### Admin Dashboard Features
 - ✅ Dual dashboard layouts (Super Admin & Client)
 - ✅ Login form with professional UI and keyboard support
@@ -455,18 +564,33 @@ The axios instance automatically:
 
 ### Client Dashboard Features
 - ✅ Client dashboard with knowledge base statistics
+- ✅ Client dashboard with subscription display ⭐ NEW
 - ✅ Chatbot configuration interface (colors, position, welcome message)
+- ✅ Chatbot configuration with embed script display ⭐ NEW
+- ✅ Chatbot configuration with integration guide modal ⭐ NEW
 - ✅ Web scraper management with URL listing
 - ✅ Rescrape functionality with auto-embeddings generation
 - ✅ Conversations viewer with message thread display
 - ✅ Client-side filtering and pagination
 - ✅ Quick action shortcuts (My Chatbot, Analytics, etc.)
 - ✅ Recent updates and getting started guidance
+- ✅ **Leads Management Page** ⭐ NEW
+  - Search and filter leads by status
+  - Real-time status updates
+  - Contact information management
+  - Pagination for large lead lists
+  - Stats overview (total, new, qualified, won)
 
 ### UI/UX Enhancements
-- ✅ Coming Soon pages for unfinished features with custom icons
+- ✅ Icon System component replacing all emojis
+- ✅ Coming Soon pages for unfinished features
 - ✅ Admin sidebar navigation with proper menu structure
 - ✅ Client sidebar navigation with organized sections
+- ✅ Client sidebar with dynamic subscription badge ⭐ NEW
+- ✅ Enhanced color palette with CSS variables ⭐ NEW
+  - Secondary hover color
+  - Secondary light color
+  - Warning light color
 - ✅ Custom scrollbar styling (webkit & Firefox compatible)
 - ✅ Improved layout margins and max-width constraints
 - ✅ Enhanced visual hierarchy and spacing
@@ -518,6 +642,73 @@ The axios instance automatically:
    - Should submit form and log in
 
 ## 📚 Usage Examples
+
+### Using the Centralized API Layer
+
+```typescript
+import { 
+  authApi, 
+  clientApi, 
+  adminClientsApi, 
+  adminUsersApi,
+  publicApi,
+  fetchScraperData 
+} from '@/api';
+
+// Get current user
+const userRole = await authApi.getMe();
+
+// Get client profile
+const profile = await clientApi.getClientProfile();
+
+// Get client conversations
+const conversations = await clientApi.getConversations();
+
+// Get leads
+const leads = await clientApi.getLeads('/leads?limit=20');
+
+// Get client by status (admin only)
+const activeClients = await adminClientsApi.getClientsByStatus('active');
+
+// Update client
+await adminClientsApi.updateClient(clientId, { company_name: 'New Name' });
+
+// Create user (admin only)
+await adminUsersApi.createUser({
+  supabaseUserId: 'uuid',
+  userName: 'John Doe',
+  role: 'client',
+  clientName: 'Acme Corp'
+});
+
+// Batch fetch for optimization
+const { content, stats } = await fetchScraperData();
+```
+
+### Using the Icon Component
+
+```typescript
+import Icon from '@/components/Icon';
+
+// Decorative icon (default)
+<Icon name="chatbot" size="lg" decorative />
+
+// Accessible icon with label
+<Icon name="settings" ariaLabel="Settings" title="Open Settings" />
+
+// With custom className
+<Icon name="analytics" size="md" className="text-blue-500" />
+
+// Available icon names:
+// Navigation: dashboard, search, menu, chevronDown, chevronRight
+// Data: analytics, stats, trending, api, storage
+// Communication: chat, message, feedback
+// User: users, people
+// Business: chatbot, billing, card, subscription, money
+// System: settings, cog, security, lock, logs, activity
+// Integration: integrations, link, keys
+// Actions: check, close, plus, trash, edit, download, copy, arrowRight
+```
 
 ### Using Authenticated HTTP Client
 
@@ -609,12 +800,13 @@ For issues or questions, contact the development team or file an issue in the re
 
 ---
 
-**Last Updated:** February 9, 2026
+**Last Updated:** February 15, 2026
 **Status:** Production Ready ✅
-**Latest Feature Set:** Dashboard Enhancements v2.0
-  - Subscription Management System
-  - Support Tickets Interface
-  - Client Conversation Viewer
-  - Chatbot Configuration UI
-  - Web Scraper Management
-  - Enhanced Layouts & UX
+**Latest Feature Set:** Dashboard Enhancements v3.0 ⭐
+  - **Icon System** - SVG-based reusable component (50+ icons)
+  - **Centralized API Layer** - Organized endpoint groups
+  - **Leads Management** - Full lead tracking and management
+  - **Enhanced ChatbotConfiguration** - Embed script guide
+  - **Enhanced ClientDashboard** - Subscription display
+  - **Enhanced ClientSidebar** - Dynamic subscription badge
+  - **Color Palette Enhancements** - New CSS variables

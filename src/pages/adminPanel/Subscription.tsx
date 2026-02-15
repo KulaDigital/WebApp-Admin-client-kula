@@ -6,9 +6,7 @@ import {
   updateSubscriptionPlan,
   formatSubscriptionDate,
   daysUntilExpiry,
-  getSubscriptionLabel,
   getStatusBadgeClasses,
-  isUserEntitled,
 } from '../../utils/subscriptionApi';
 import Button from '../../components/Button';
 

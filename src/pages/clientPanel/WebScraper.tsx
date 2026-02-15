@@ -238,7 +238,7 @@ const WebScraper: React.FC = () => {
 
               {/* Table Body */}
               <tbody>
-                {urls.map((urlItem, idx) => (
+                {urls.map((urlItem, _idx) => (
                   <tr
                     key={urlItem.url}
                     className="border-b border-[var(--color-border)] hover:bg-bg-light transition-colors"

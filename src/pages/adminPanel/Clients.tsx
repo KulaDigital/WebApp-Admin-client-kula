@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { adminClientsApi } from '../../api';
 import axiosInstance from '../../utils/instance';
 import publicAxios from '../../utils/publicInstance';
 import Drawer from '../../components/Drawer';
@@ -55,9 +56,9 @@ const Clients: React.FC = () => {
   const fetchClients = async (status: 'active' | 'inactive') => {
     try {
       setLoading(true);
-      const response = await axiosInstance.get(`/admin/clients/status/${status}`);
-      if (response.data.success) {
-        setClients(response.data.clients);
+      const response = await adminClientsApi.getClientsByStatus(status);
+      if (response.success) {
+        setClients(response.clients);
       }
       setError(null);
     } catch (err) {
@@ -93,11 +94,11 @@ const Clients: React.FC = () => {
   const handleViewClient = async (client: ClientData) => {
     try {
       // Fetch full client details including embed_script
-      const response = await axiosInstance.get(`/admin/clients/${client.id}`);
-      if (response.data.success) {
+      const response = await adminClientsApi.getClient(client.id);
+      if (response.success) {
         setSelectedClient({
           ...client,
-          embed_script: response.data.client.embed_script
+          embed_script: response.client.embed_script
         });
       } else {
         setSelectedClient(client);
@@ -590,7 +591,7 @@ const Clients: React.FC = () => {
                 {
                   label: 'Rescrape & Re-embed',
                   onClick: () => handleRescrapeAndReembed(selectedClient),
-                  color: '#10b981',
+                  color: 'var(--color-success)',
                 },
               ]
         ) : undefined}
