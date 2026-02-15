@@ -5,10 +5,10 @@ import type { Activity, StatCardProps } from '../../types';
 
 const Dashboard: React.FC = () => {
   const stats: StatCardProps[] = [
-    { icon: '👥', label: 'Total Clients', value: '42', change: '↑ 12% from last month', changeType: 'positive', iconColor: 'blue' },
-    { icon: '🤖', label: 'Active Chatbots', value: '127', change: '↑ 8% from last month', changeType: 'positive', iconColor: 'purple' },
-    { icon: '💰', label: 'Monthly Revenue', value: '$12,450', change: '↑ 23% from last month', changeType: 'positive', iconColor: 'green' },
-    { icon: '💬', label: 'Total Conversations', value: '45.2K', change: '↑ 34% from last month', changeType: 'positive', iconColor: 'orange' },
+    { icon: 'people', label: 'Total Clients', value: '42', change: '↑ 12% from last month', changeType: 'positive', iconColor: 'blue' },
+    { icon: 'chatbot', label: 'Active Chatbots', value: '127', change: '↑ 8% from last month', changeType: 'positive', iconColor: 'purple' },
+    { icon: 'billing', label: 'Monthly Revenue', value: '$12,450', change: '↑ 23% from last month', changeType: 'positive', iconColor: 'green' },
+    { icon: 'chat', label: 'Total Conversations', value: '45.2K', change: '↑ 34% from last month', changeType: 'positive', iconColor: 'orange' },
   ];
 
   const recentActivity: Activity[] = [

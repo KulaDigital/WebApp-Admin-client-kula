@@ -5,9 +5,9 @@ import type { Chatbot, StatCardProps } from '../../types';
 
 const Chatbots: React.FC = () => {
   const stats: StatCardProps[] = [
-    { label: 'Total Chatbots', value: '127' },
-    { label: 'Active Now', value: '89' },
-    { label: 'Avg. Accuracy', value: '96%' },
+    { icon: 'chatbot', label: 'Total Chatbots', value: '127' },
+    { icon: 'trending', label: 'Active Now', value: '89' },
+    { icon: 'stats', label: 'Avg. Accuracy', value: '96%' },
   ];
 
   const chatbots: Chatbot[] = [

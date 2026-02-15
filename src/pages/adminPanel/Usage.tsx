@@ -5,9 +5,9 @@ import type { StatCardProps, Usage as UsageType } from '../../types';
 
 const Usage: React.FC = () => {
   const stats: StatCardProps[] = [
-    { label: 'API Calls This Month', value: '1.2M', change: '↑ 15% from last month', changeType: 'positive' },
-    { label: 'Storage Used', value: '24.5 GB', change: '↑ 2.1 GB increase', changeType: 'positive' },
-    { label: 'Bandwidth', value: '450 GB', change: '↑ 12% from last month', changeType: 'positive' },
+    { icon: 'api', label: 'API Calls This Month', value: '1.2M', change: '↑ 15% from last month', changeType: 'positive' },
+    { icon: 'storage', label: 'Storage Used', value: '24.5 GB', change: '↑ 2.1 GB increase', changeType: 'positive' },
+    { icon: 'trending', label: 'Bandwidth', value: '450 GB', change: '↑ 12% from last month', changeType: 'positive' },
   ];
 
   const usageData: UsageType[] = [

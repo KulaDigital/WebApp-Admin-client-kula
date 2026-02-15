@@ -1,5 +1,6 @@
 // pages/Settings.tsx
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState } from 'react';
+import type { ChangeEvent } from 'react';
 import type { SettingsState } from '../../types';
 
 const Settings: React.FC = () => {

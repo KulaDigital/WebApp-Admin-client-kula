@@ -1,15 +1,16 @@
 // pages/Integrations.tsx
 import React from 'react';
+import Icon from '../../components/Icon';
 import type { Integration } from '../../types';
 
 const Integrations: React.FC = () => {
     const integrations: Integration[] = [
-        { name: 'Stripe', icon: '💳', description: 'Accept payments and manage subscriptions', status: 'Connected', color: 'purple' },
-        { name: 'Slack', icon: '💬', description: 'Send notifications to your team', status: 'Connected', color: 'purple' },
-        { name: 'Zapier', icon: '⚡', description: 'Connect with 3000+ apps', status: 'Available', color: 'blue' },
-        { name: 'Google Analytics', icon: '📊', description: 'Track chatbot performance', status: 'Available', color: 'blue' },
-        { name: 'Salesforce', icon: '☁️', description: 'Sync leads and contacts', status: 'Available', color: 'blue' },
-        { name: 'HubSpot', icon: '🎯', description: 'Marketing automation platform', status: 'Available', color: 'blue' },
+        { name: 'Stripe', icon: 'card', description: 'Accept payments and manage subscriptions', status: 'Connected', color: 'purple' },
+        { name: 'Slack', icon: 'chat', description: 'Send notifications to your team', status: 'Connected', color: 'purple' },
+        { name: 'Zapier', icon: 'trending', description: 'Connect with 3000+ apps', status: 'Available', color: 'blue' },
+        { name: 'Google Analytics', icon: 'stats', description: 'Track chatbot performance', status: 'Available', color: 'blue' },
+        { name: 'Salesforce', icon: 'link', description: 'Sync leads and contacts', status: 'Available', color: 'blue' },
+        { name: 'HubSpot', icon: 'analytics', description: 'Marketing automation platform', status: 'Available', color: 'blue' },
     ];
 
     return (
@@ -28,8 +29,8 @@ const Integrations: React.FC = () => {
                     <div key={index} className="bg-white border border-[var(--color-border)] rounded-lg p-6 hover:shadow-md transition-all">
                         <div className="flex items-start justify-between mb-4">
                             <div className="flex items-center gap-3">
-                                <div className="w-12 h-12 bg-bg-light rounded-md flex items-center justify-center text-2xl">
-                                    {integration.icon}
+                                <div className="w-12 h-12 bg-bg-light rounded-md flex items-center justify-center text-text-primary">
+                                    <Icon name={integration.icon} size="md" decorative />
                                 </div>
                                 <div>
                                     <h3 className="font-bold text-text-primary font-heading">{integration.name}</h3>

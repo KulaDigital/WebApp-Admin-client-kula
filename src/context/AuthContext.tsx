@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
 import { supabase } from '../utils/supabase';
-import axiosInstance from '../utils/instance';
+import { authApi } from '../api';
 
 export interface UserRole {
   role: 'super_admin' | 'client';
@@ -30,15 +30,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [fetchedRoleForSession, setFetchedRoleForSession] = useState<string | null>(null);
 
   // Fetch user role from backend
-  const fetchUserRole = async (accessToken: string, sessionId?: string) => {
+  const fetchUserRole = async (sessionId?: string) => {
     setRoleLoading(true);
     try {
-      const response = await axiosInstance.get('/me', {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-      const { role, client_id, user_name } = response.data;
+      const response = await authApi.getMe(true);
+      const { role, client_id, user_name } = response;
       setUserRole({ role, clientId: client_id, userName: user_name });
       // Track that we've fetched the role for this session
       if (sessionId) {
@@ -73,7 +69,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         if (currentSession?.access_token) {
           const sessionId = currentSession.user?.id;
           if (sessionId !== fetchedRoleForSession) {
-            await fetchUserRole(currentSession.access_token, sessionId);
+            await fetchUserRole(sessionId);
           }
         }
 
@@ -90,7 +86,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             const sessionId = newSession.user?.id;
             // Only fetch role if this is a new session we haven't fetched for
             if (sessionId !== fetchedRoleForSession) {
-              await fetchUserRole(newSession.access_token, sessionId);
+              await fetchUserRole(sessionId);
             }
           } else {
             setUserRole(null);

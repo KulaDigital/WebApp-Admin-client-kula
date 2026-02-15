@@ -16,7 +16,6 @@ interface Ticket {
 const Tickets: React.FC = () => {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>('all');
 
   useEffect(() => {
@@ -28,13 +27,11 @@ const Tickets: React.FC = () => {
       setLoading(true);
       const response = await axiosInstance.get('/api/admin/support-tickets');
       setTickets(response.data.data || []);
-      setError(null);
       setLoading(false);
-    } catch (err) {
+    } catch (_err) {
       // If API fails, show empty state with demo message
-      console.error('Failed to fetch tickets:', err);
+      console.error('Failed to fetch tickets:', _err);
       setTickets([]);
-      setError(null);
       setLoading(false);
     }
   };

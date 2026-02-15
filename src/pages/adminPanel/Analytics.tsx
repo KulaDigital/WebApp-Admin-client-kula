@@ -5,10 +5,10 @@ import type { StatCardProps } from '../../types';
 
 const Analytics: React.FC = () => {
     const stats: StatCardProps[] = [
-        { icon: '👁️', label: 'Total Views', value: '124.5K', change: '↑ 18% from last month', changeType: 'positive', iconColor: 'blue' },
-        { icon: '💬', label: 'Conversations', value: '45.2K', change: '↑ 34% from last month', changeType: 'positive', iconColor: 'purple' },
-        { icon: '⭐', label: 'Avg. Rating', value: '4.8', change: '↑ 0.2 improvement', changeType: 'positive', iconColor: 'orange' },
-        { icon: '⚡', label: 'Response Time', value: '1.2s', change: '↓ 0.3s faster', changeType: 'positive', iconColor: 'green' },
+        { icon: 'search', label: 'Total Views', value: '124.5K', change: '↑ 18% from last month', changeType: 'positive', iconColor: 'blue' },
+        { icon: 'chat', label: 'Conversations', value: '45.2K', change: '↑ 34% from last month', changeType: 'positive', iconColor: 'purple' },
+        { icon: 'trending', label: 'Avg. Rating', value: '4.8', change: '↑ 0.2 improvement', changeType: 'positive', iconColor: 'orange' },
+        { icon: 'stats', label: 'Response Time', value: '1.2s', change: '↓ 0.3s faster', changeType: 'positive', iconColor: 'green' },
     ];
 
     return (

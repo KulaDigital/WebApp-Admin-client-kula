@@ -14,6 +14,8 @@
   --color-primary-hover-dark: #5f54f0;
   /* Secondary Colors */
   --color-secondary: #0A2540;
+  --color-secondary-hover: #062d5c;
+  --color-secondary-light: rgba(10, 37, 64, 0.1);
   /* Background Colors */
   --color-bg-dark: #0A2540;
   --color-bg-light: #F6F9FC;
@@ -28,6 +30,7 @@
   /* Status Colors */
   --color-success: #10B981;
   --color-warning: #F59E0B;
+  --color-warning-light: rgba(245, 158, 11, 0.1);
   --color-error: #EF4444;
   --color-info: #3B82F6;
   /* Typography */

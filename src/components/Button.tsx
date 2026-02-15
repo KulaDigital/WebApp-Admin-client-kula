@@ -69,7 +69,7 @@ export default function Button({
     });
 
     const getSecondaryButtonHoverStyle = (): React.CSSProperties => ({
-        backgroundColor: '#062d5c',
+        backgroundColor: 'var(--color-secondary-hover, #062d5c)',
         color: 'white',
     });
 
@@ -80,7 +80,7 @@ export default function Button({
     });
 
     const getSecondaryOutlineHoverStyle = (): React.CSSProperties => ({
-        backgroundColor: 'rgba(10, 37, 64, 0.1)',
+        backgroundColor: 'var(--color-secondary-light, rgba(10, 37, 64, 0.1))',
         color: 'var(--color-secondary)',
         borderColor: 'var(--color-secondary)',
     });

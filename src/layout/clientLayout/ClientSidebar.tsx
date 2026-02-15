@@ -1,5 +1,8 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { useState, useEffect } from "react";
+import { clientApi } from "../../api";
+import GreetoIcon from "../../assets/GreetoIconWhite.svg";
 
 interface MenuItem {
     label: string;
@@ -12,21 +15,28 @@ interface NavSection {
     items: MenuItem[];
 }
 
+interface SubscriptionData {
+    plan: string;
+    status: string;
+    is_trial: boolean;
+}
+
 const navSections: NavSection[] = [
     {
         title: "MAIN",
         items: [
             { label: "Dashboard", path: "/client/dashboard" },
             { label: "My Chatbot", path: "/client/chatbot" },
-            { label: "Chatbot Configuration", path: "/client/chatbot-config" },
-            { label: "Conversations", path: "/client/conversations" },
             { label: "Analytics", path: "/client/analytics" },
         ],
     },
     {
-        title: "TRAINING",
+        title: "MANAGE",
         items: [
+            { label: "Chatbot Configuration", path: "/client/chatbot-config" },
             { label: "Web Scraper", path: "/client/web-scraper" },
+            { label: "Conversations", path: "/client/conversations" },
+            { label: "Leads", path: "/client/leads" },
             { label: "Test Chatbot", path: "/client/test-chatbot" },
         ],
     },
@@ -53,6 +63,56 @@ export default function ClientSidebar() {
     const navigate = useNavigate();
     const location = useLocation();
     const { userRole } = useAuth();
+    const [subscription, setSubscription] = useState<SubscriptionData | null>(null);
+
+    useEffect(() => {
+        fetchSubscriptionData();
+    }, []);
+
+    const fetchSubscriptionData = async () => {
+        try {
+            const response = await clientApi.getClientProfile();
+            if (response.subscription) {
+                setSubscription({
+                    plan: response.subscription.plan,
+                    status: response.subscription.status,
+                    is_trial: response.subscription.is_trial,
+                });
+            }
+        } catch (err) {
+            console.error('Error fetching subscription data:', err);
+        }
+    };
+    const getSubscriptionBadgeColor = (plan: string) => {
+        switch (plan?.toLowerCase()) {
+            case 'professional':
+                return 'bg-[var(--color-primary)]';
+            case 'business':
+                return 'bg-[var(--color-success)]';
+            case 'enterprise':
+                return 'bg-[var(--color-warning)]';
+            default:
+                return 'bg-[var(--color-primary)]';
+        }
+    };
+
+    const getShortPlanName = (plan: string) => {
+        switch (plan?.toLowerCase()) {
+            case 'professional':
+                return 'PRO';
+            case 'business':
+                return 'BIZ';
+            case 'enterprise':
+                return 'ENT';
+            default:
+                return 'PLAN';
+        }
+    };
+
+    const formatPlanName = (plan: string, isTrial: boolean) => {
+        const shortName = getShortPlanName(plan);
+        return isTrial ? `${shortName} • TRIAL` : shortName;
+    };
 
     const isActive = (path: string) => location.pathname === path;
 
@@ -61,8 +121,8 @@ export default function ClientSidebar() {
             {/* Logo Section */}
             <div className="px-6 py-8 border-b border-white/10">
                 <div className="flex items-center gap-3 mb-1">
-                    <div className="w-10 h-10 bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-hover)] rounded-lg flex items-center justify-center text-xl">
-                        💬
+                    <div className="w-10 h-10 bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-hover)] rounded-lg flex items-center justify-center">
+                        <img src={GreetoIcon} alt="Greeto" className="w-6 h-6" />
                     </div>
                     <div>
                         <div className="text-xl font-extrabold text-white font-heading">
@@ -72,13 +132,11 @@ export default function ClientSidebar() {
                 </div>
                 <div className="flex items-center gap-2 ml-[52px]">
                     <span className="text-xs text-[var(--color-text-light)] opacity-70 font-medium">Client Admin Panel</span>
-                    <span className="bg-[var(--color-primary)] text-white text-[9px] px-2 py-1 rounded-full font-bold uppercase tracking-wide">
-                        SUPER
+                    <span className={`${getSubscriptionBadgeColor(subscription?.plan || '')} text-white text-[8px] px-2.5 py-1.5 rounded-md font-bold tracking-wider shadow-md whitespace-nowrap`}>
+                        {subscription ? formatPlanName(subscription.plan, subscription.is_trial) : 'LOADING'}
                     </span>
                 </div>
             </div>
-
-            {/* Navigation */}
             <div className="h-[60%] overflow-y-auto py-6 scrollbar-thin scrollbar-thumb-white/10 ">
                 {navSections.map((section, idx) => (
                     <div key={idx} className="mb-8">
