@@ -6,6 +6,7 @@ import Button from '../../components/Button';
 import ViewModal from '../../components/ViewModal';
 import EditModal from '../../components/EditModal';
 import DeleteModal from '../../components/DeleteModal';
+import { useNotification } from '../../components/Notification';
 
 interface UserData {
   user_id: string;
@@ -18,6 +19,7 @@ interface UserData {
 }
 
 const Users: React.FC = () => {
+  const { showNotification, NotificationComponent } = useNotification();
   const [isOpen, setIsOpen] = useState(false);
   const [users, setUsers] = useState<UserData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -104,13 +106,13 @@ const Users: React.FC = () => {
       const response = await axiosInstance.put(`/admin/users/${selectedUser.user_id}`, payload);
 
       if (response.data.success) {
-        alert('User updated successfully!');
+        showNotification('User updated successfully!', 'success');
         setEditModal(false);
         fetchUsers(statusFilter);
       }
     } catch (err: any) {
       console.error('Error updating user:', err);
-      alert(err.response?.data?.error || 'Failed to update user');
+      showNotification(err.response?.data?.error || 'Failed to update user', 'error');
     } finally {
       setEditLoading(false);
     }
@@ -124,13 +126,13 @@ const Users: React.FC = () => {
       const response = await axiosInstance.delete(`/admin/users/${selectedUser.user_id}`);
 
       if (response.data.success) {
-        alert('User deactivated successfully!');
+        showNotification('User deactivated successfully!', 'success');
         setDeleteModal(false);
         fetchUsers(statusFilter);
       }
     } catch (err: any) {
       console.error('Error deleting user:', err);
-      alert(err.response?.data?.error || 'Failed to delete user');
+      showNotification(err.response?.data?.error || 'Failed to delete user', 'error');
     } finally {
       setDeleteLoading(false);
     }
@@ -313,6 +315,7 @@ const Users: React.FC = () => {
         itemName={selectedUser?.user_name || ''}
         loading={deleteLoading}
       />
+      {NotificationComponent}
     </div>
   );
 };

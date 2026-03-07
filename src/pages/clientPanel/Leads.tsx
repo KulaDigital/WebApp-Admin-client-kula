@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axiosInstance from '../../utils/instance';
+import { useNotification } from '../../components/Notification';
 
 interface Lead {
   id: number;
@@ -26,6 +27,7 @@ interface PaginationInfo {
 }
 
 const Leads: React.FC = () => {
+  const { showNotification, NotificationComponent } = useNotification();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -117,7 +119,7 @@ const Leads: React.FC = () => {
       }
     } catch (err) {
       console.error('Error updating lead status:', err);
-      alert('Failed to update lead status. Please try again.');
+      showNotification('Failed to update lead status. Please try again.', 'error');
     } finally {
       setUpdatingStatusId(null);
     }
@@ -457,6 +459,7 @@ const Leads: React.FC = () => {
           </div>
         )}
       </div>
+      {NotificationComponent}
     </div>
   );
 };

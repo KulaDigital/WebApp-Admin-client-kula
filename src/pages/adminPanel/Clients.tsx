@@ -8,6 +8,8 @@ import Button from '../../components/Button';
 import ViewModal from '../../components/ViewModal';
 import EditModal from '../../components/EditModal';
 import DeleteModal from '../../components/DeleteModal';
+import StarterSuggestions from '../../components/StarterSuggestions';
+import { useNotification } from '../../components/Notification';
 
 interface ClientData {
   id: number;
@@ -19,10 +21,14 @@ interface ClientData {
   widget_config?: any;
   primaryColor?: string;
   secondaryColor?: string;
+  welcomeMessage?: string;
+  position?: string;
   embed_script?: string;
+  starter_suggestions?: string[] | null;
 }
 
 const Clients: React.FC = () => {
+  const { showNotification, NotificationComponent } = useNotification();
   const [isOpen, setIsOpen] = useState(false);
   const [clients, setClients] = useState<ClientData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -35,6 +41,7 @@ const Clients: React.FC = () => {
   const [deleteModal, setDeleteModal] = useState(false);
   const [selectedClient, setSelectedClient] = useState<ClientData | null>(null);
   const [editFormData, setEditFormData] = useState<Partial<ClientData>>({});
+  const [editStarterSuggestions, setEditStarterSuggestions] = useState<string[]>([]);
   const [editLoading, setEditLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
@@ -112,7 +119,17 @@ const Clients: React.FC = () => {
 
   const handleEditClient = (client: ClientData) => {
     setSelectedClient(client);
-    setEditFormData(client);
+    // Extract colors from widget_config into flat form fields
+    setEditFormData({
+      ...client,
+      primaryColor: client.widget_config?.primaryColor || '#635BFF',
+      secondaryColor: client.widget_config?.secondaryColor || '#0A2540',
+      welcomeMessage: client.widget_config?.welcomeMessage || '',
+      position: client.widget_config?.position || 'bottom-right',
+    });
+    setEditStarterSuggestions(
+      Array.isArray(client.starter_suggestions) ? client.starter_suggestions : []
+    );
     setEditModal(true);
   };
 
@@ -128,13 +145,13 @@ const Clients: React.FC = () => {
       });
 
       if (response.data.success) {
-        alert('Client activated successfully!');
+        showNotification('Client activated successfully!', 'success');
         setViewModal(false);
         fetchClients(statusFilter);
       }
     } catch (err: any) {
       console.error('Error activating client:', err);
-      alert(err.response?.data?.error || 'Failed to activate client');
+      showNotification(err.response?.data?.error || 'Failed to activate client', 'error');
     }
   };
 
@@ -187,7 +204,7 @@ const Clients: React.FC = () => {
         error: err.response?.data?.error || 'Failed to start rescraping',
         clientId: null,
       });
-      alert(err.response?.data?.error || 'Failed to start rescraping and re-embedding');
+      showNotification(err.response?.data?.error || 'Failed to start rescraping and re-embedding', 'error');
     }
   };
 
@@ -218,12 +235,13 @@ const Clients: React.FC = () => {
 
           // Now trigger embeddings
           triggerReembedding(apiKey, clientId);
-        } else if (response.data.status === 'processing') {
-          const currentProgress = 30 + (response.data.progress || 0) * 0.4; // Scale 0-100 to 30-70
+        } else if (response.data.status === 'running' || response.data.status === 'pending') {
+          const percentage = response.data.progress?.percentage || 0;
+          const currentProgress = 30 + percentage * 0.4; // Scale 0-100 to 30-70
           setRescrapeProgress({
             isProcessing: true,
             progress: Math.min(currentProgress, 65),
-            status: `Scraping: ${response.data.progress || 0}%`,
+            status: `Scraping: ${percentage}%`,
             error: null,
             clientId,
           });
@@ -236,7 +254,7 @@ const Clients: React.FC = () => {
             error: response.data.error || 'Scraping failed',
             clientId: null,
           });
-          alert(`Error: ${response.data.error || 'Scraping failed'}`);
+          showNotification(response.data.error || 'Scraping failed', 'error');
         }
       } catch (err) {
         console.error('[monitorRescrapeProgress] Error:', err);
@@ -251,7 +269,7 @@ const Clients: React.FC = () => {
           error: 'Rescraping timeout - please try again',
           clientId: null,
         });
-        alert('Rescraping timeout - please try again');
+        showNotification('Rescraping timeout - please try again', 'error');
       }
     }, 1000);
   };
@@ -266,7 +284,32 @@ const Clients: React.FC = () => {
 
       console.log('[triggerReembedding] Embeddings response:', response.data);
 
-      monitorReembeddingProgress(apiKey, clientId);
+      if (response.data.success && response.data.jobId) {
+        // Async job started — monitor via job endpoint
+        monitorReembeddingProgress(response.data.jobId, apiKey, clientId);
+      } else if (response.data.success && response.data.pendingCount === 0) {
+        // All chunks already embedded
+        setRescrapeProgress({
+          isProcessing: false,
+          progress: 100,
+          status: 'Rescraping and re-embedding complete!',
+          error: null,
+          clientId: null,
+        });
+        setTimeout(() => {
+          showNotification('Rescraping and re-embedding completed successfully!', 'success');
+          fetchClients(statusFilter);
+        }, 800);
+      } else {
+        setRescrapeProgress({
+          isProcessing: false,
+          progress: 0,
+          status: '',
+          error: response.data.error || 'Failed to start embedding generation',
+          clientId: null,
+        });
+        showNotification(response.data.error || 'Failed to start embedding generation', 'error');
+      }
     } catch (err: any) {
       console.error('[triggerReembedding] Error:', err);
       setRescrapeProgress({
@@ -276,11 +319,11 @@ const Clients: React.FC = () => {
         error: err.response?.data?.error || 'Failed to generate embeddings',
         clientId: null,
       });
-      alert(err.response?.data?.error || 'Failed to generate embeddings');
+      showNotification(err.response?.data?.error || 'Failed to generate embeddings', 'error');
     }
   };
 
-  const monitorReembeddingProgress = (apiKey: string, clientId: number) => {
+  const monitorReembeddingProgress = (jobId: number, apiKey: string, clientId: number) => {
     let attempts = 0;
     const maxAttempts = 360; // 6 minutes with 1-second intervals
 
@@ -288,18 +331,15 @@ const Clients: React.FC = () => {
       attempts++;
 
       try {
-        const response = await publicAxios.get(`/embeddings/stats?client_id=${clientId}`, {
+        const response = await publicAxios.get(`/embeddings/job/${jobId}`, {
           headers: { 'x-api-key': apiKey }
         });
 
-        console.log('[monitorReembeddingProgress] Stats:', response.data);
+        console.log('[monitorReembeddingProgress] Job status:', response.data);
 
-        const stats = response.data.stats || response.data;
-        const percentComplete = stats.percentComplete !== undefined ? stats.percentComplete : 0;
-        const pendingEmbeddings = stats.pendingEmbeddings !== undefined ? stats.pendingEmbeddings : 0;
+        const { status, progress, error: jobError } = response.data;
 
-        // Check if embeddings are complete (100% or no pending embeddings)
-        if (percentComplete === 100 || pendingEmbeddings === 0) {
+        if (status === 'completed') {
           clearInterval(pollInterval);
           setRescrapeProgress({
             isProcessing: false,
@@ -308,17 +348,28 @@ const Clients: React.FC = () => {
             error: null,
             clientId: null,
           });
-          // Delay alert and refresh to let progress bar animate to 100%
+          // Delay notification and refresh to let progress bar animate to 100%
           setTimeout(() => {
-            alert('✓ Rescraping and re-embedding completed successfully!');
+            showNotification('Rescraping and re-embedding completed successfully!', 'success');
             fetchClients(statusFilter);
           }, 800);
+        } else if (status === 'failed') {
+          clearInterval(pollInterval);
+          setRescrapeProgress({
+            isProcessing: false,
+            progress: 0,
+            status: '',
+            error: jobError || 'Embedding generation failed',
+            clientId: null,
+          });
+          showNotification(jobError || 'Embedding generation failed', 'error');
         } else {
-          const currentProgress = 70 + (percentComplete || 0) * 0.3;
+          const percentage = progress?.percentage || 0;
+          const currentProgress = 70 + percentage * 0.3;
           setRescrapeProgress({
             isProcessing: true,
             progress: Math.min(currentProgress, 95),
-            status: `Re-embedding: ${percentComplete}%`,
+            status: `Re-embedding: ${percentage}%`,
             error: null,
             clientId,
           });
@@ -336,7 +387,7 @@ const Clients: React.FC = () => {
           error: 'Re-embedding timeout - please try again',
           clientId: null,
         });
-        alert('Re-embedding timeout - please try again');
+        showNotification('Re-embedding timeout - please try again', 'error');
       }
     }, 1000);
   };
@@ -351,21 +402,25 @@ const Clients: React.FC = () => {
         website_url: editFormData.website_url || selectedClient.website_url,
         status: editFormData.status || selectedClient.status,
         widget_config: {
-          primaryColor: editFormData.primaryColor || selectedClient.primaryColor,
-          secondaryColor: editFormData.secondaryColor || selectedClient.secondaryColor,
+          ...(selectedClient.widget_config || {}),
+          primaryColor: editFormData.primaryColor || selectedClient.widget_config?.primaryColor || '#635BFF',
+          secondaryColor: editFormData.secondaryColor || selectedClient.widget_config?.secondaryColor || '#0A2540',
+          welcomeMessage: editFormData.welcomeMessage !== undefined ? editFormData.welcomeMessage : (selectedClient.widget_config?.welcomeMessage || ''),
+          position: editFormData.position || selectedClient.widget_config?.position || 'bottom-right',
         },
+        starter_suggestions: editStarterSuggestions.length > 0 ? editStarterSuggestions : null,
       };
 
       const response = await axiosInstance.put(`/admin/clients/${selectedClient.id}`, payload);
 
       if (response.data.success) {
-        alert('Client updated successfully!');
+        showNotification('Client updated successfully!', 'success');
         setEditModal(false);
         fetchClients(statusFilter);
       }
     } catch (err: any) {
       console.error('Error updating client:', err);
-      alert(err.response?.data?.error || 'Failed to update client');
+      showNotification(err.response?.data?.error || 'Failed to update client', 'error');
     } finally {
       setEditLoading(false);
     }
@@ -379,13 +434,13 @@ const Clients: React.FC = () => {
       const response = await axiosInstance.delete(`/admin/clients/${selectedClient.id}`);
 
       if (response.data.success) {
-        alert('Client deactivated successfully!');
+        showNotification('Client deactivated successfully!', 'success');
         setDeleteModal(false);
         fetchClients(statusFilter);
       }
     } catch (err: any) {
       console.error('Error deleting client:', err);
-      alert(err.response?.data?.error || 'Failed to delete client');
+      showNotification(err.response?.data?.error || 'Failed to delete client', 'error');
     } finally {
       setDeleteLoading(false);
     }
@@ -607,8 +662,16 @@ const Clients: React.FC = () => {
         fields={selectedClient ? [
           { name: 'company_name', label: 'Company Name', type: 'text', value: editFormData.company_name || '', onChange: (v) => setEditFormData({ ...editFormData, company_name: v }) },
           { name: 'website_url', label: 'Website', type: 'text', value: editFormData.website_url || '', onChange: (v) => setEditFormData({ ...editFormData, website_url: v }) },
-          { name: 'primaryColor', label: 'Primary Color', type: 'color', value: editFormData.primaryColor || selectedClient.primaryColor || '#635BFF', onChange: (v) => setEditFormData({ ...editFormData, primaryColor: v }) },
-          { name: 'secondaryColor', label: 'Secondary Color', type: 'color', value: editFormData.secondaryColor || selectedClient.secondaryColor || '#0A2540', onChange: (v) => setEditFormData({ ...editFormData, secondaryColor: v }) },
+          { name: 'primaryColor', label: 'Primary Color', type: 'color', value: editFormData.primaryColor || selectedClient.widget_config?.primaryColor || '#635BFF', onChange: (v) => setEditFormData({ ...editFormData, primaryColor: v }) },
+          { name: 'secondaryColor', label: 'Secondary Color', type: 'color', value: editFormData.secondaryColor || selectedClient.widget_config?.secondaryColor || '#0A2540', onChange: (v) => setEditFormData({ ...editFormData, secondaryColor: v }) },
+          { name: 'position', label: 'Widget Position', type: 'select', value: editFormData.position || selectedClient.widget_config?.position || 'bottom-right', onChange: (v) => setEditFormData({ ...editFormData, position: v }), options: ['bottom-right', 'bottom-left'] },
+          { name: 'welcomeMessage', label: 'Welcome Message', type: 'text', value: editFormData.welcomeMessage ?? selectedClient.widget_config?.welcomeMessage ?? '', onChange: (v) => setEditFormData({ ...editFormData, welcomeMessage: v }) },
+          { name: 'starter_suggestions', label: 'Starter Suggestions', type: 'custom' as const, value: '', onChange: () => {}, renderCustom: () => (
+            <StarterSuggestions
+              value={editStarterSuggestions}
+              onChange={setEditStarterSuggestions}
+            />
+          )},
           { name: 'status', label: 'Status', type: 'select', value: editFormData.status || '', onChange: (v) => setEditFormData({ ...editFormData, status: v }), options: ['active', 'inactive', 'trial'] },
         ] : []}
       />
@@ -622,6 +685,7 @@ const Clients: React.FC = () => {
         itemName={selectedClient?.company_name || ''}
         loading={deleteLoading}
       />
+      {NotificationComponent}
     </div>
   );
 };

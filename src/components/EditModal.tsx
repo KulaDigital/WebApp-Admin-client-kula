@@ -4,10 +4,11 @@ import Button from './Button';
 interface EditField {
   name: string;
   label: string;
-  type: 'text' | 'tel' | 'email' | 'select' | 'color';
+  type: 'text' | 'tel' | 'email' | 'select' | 'color' | 'custom';
   value: string;
   onChange: (value: string) => void;
   options?: string[];
+  renderCustom?: () => React.ReactNode;
 }
 
 interface EditModalProps {
@@ -42,7 +43,9 @@ const EditModal: React.FC<EditModalProps> = ({ open, onClose, onSave, title, fie
                 <label className="block text-xs font-semibold text-text-secondary uppercase tracking-wide mb-2">
                   {field.label}
                 </label>
-                {field.type === 'select' ? (
+                {field.type === 'custom' && field.renderCustom ? (
+                  field.renderCustom()
+                ) : field.type === 'select' ? (
                   <select
                     value={field.value}
                     onChange={(e) => field.onChange(e.target.value)}

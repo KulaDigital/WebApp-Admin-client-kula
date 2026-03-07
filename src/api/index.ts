@@ -81,6 +81,22 @@ export const clientApi = {
     const response = await axiosInstance.get(query);
     return response.data;
   },
+
+  /**
+   * Test ad-hoc query against knowledge base
+   * Used by: ChatbotConfiguration (Test Chatbot feature)
+   * Bypasses chat endpoints, nothing is stored
+   */
+  testQuery: async (query: string, apiKey: string) => {
+    const response = await axiosInstance.post('/api/search/test', {
+      query,
+    }, {
+      headers: {
+        'X-API-Key': apiKey,
+      },
+    });
+    return response.data;
+  },
 };
 
 // ============================================================================
@@ -142,17 +158,6 @@ export const adminClientsApi = {
    */
   deleteClient: async (clientId: number | string) => {
     const response = await axiosInstance.delete(`/admin/clients/${clientId}`);
-    return response.data;
-  },
-
-  /**
-   * Rescrape and re-embed client content
-   * Used by: Clients page
-   */
-  rescrapeAndReembed: async (clientId: number | string) => {
-    const response = await axiosInstance.post(
-      `/admin/clients/${clientId}/rescrape-reembed`
-    );
     return response.data;
   },
 };

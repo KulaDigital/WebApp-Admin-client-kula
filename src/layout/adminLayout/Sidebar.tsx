@@ -19,37 +19,31 @@ const navSections: NavSection[] = [
     {
         title: "MAIN",
         items: [
-            { label: "Dashboard", path: "/SA/dashboard" },
-            { label: "Analytics", path: "/SA/analytics" },
+            { label: "Dashboard", path: "/SA/dashboard" },//has info for the admin about the clients users and all that stuff
+            { label: "Analytics", path: "/SA/analytics" },//analytics of all the users and clients
         ],
     },
     {
-        title: "MANAGEMENT",
+        title: "MANAGE",
         items: [
             { label: "Users", path: "/SA/users" },
             { label: "Clients", path: "/SA/clients" },
-            { label: "Chatbots", path: "/SA/chatbots" },
             { label: "Subscriptions", path: "/SA/subscriptions" },
-            { label: "Billing & Revenue", path: "/SA/billing" },
-            { label: "Usage", path: "/SA/usage" },
+            { label: "Usage", path: "/SA/usage" },//each client's usage, how many messages used, how many leads got, how many conversations and all that stuff
         ],
     },
-    {
-        title: "SUPPORT",
-        items: [
-            { label: "Tickets", path: "/SA/support" },
-            { label: "Active Logs", path: "/SA/active-logs" },
-            { label: "User Feedback", path: "/SA/user-feedback" },
-        ],
-    },
+    // {
+    //     title: "SUPPORT",
+    //     items: [
+    //         { label: "Tickets", path: "/SA/support" },
+    //         { label: "Active Logs", path: "/SA/active-logs" },
+    //         { label: "User Feedback", path: "/SA/user-feedback" },
+    //     ],
+    // },
     {
         title: "SYSTEM",
         items: [
-
-            { label: "Settings", path: "/SA/settings" },
-            { label: "API Management", path: "/SA/api-management" },
-            { label: "Integrations", path: "/SA/integrations" },
-            { label: "Security", path: "/SA/security" },
+            { label: "Settings", path: "/SA/settings" },//system settings for the admin, like changing the theme, changing the colors, changing the font and all that stuff
         ],
     },
 ];

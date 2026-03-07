@@ -25,9 +25,8 @@ const navSections: NavSection[] = [
     {
         title: "MAIN",
         items: [
-            { label: "Dashboard", path: "/client/dashboard" },
-            { label: "My Chatbot", path: "/client/chatbot" },
-            { label: "Analytics", path: "/client/analytics" },
+            { label: "Dashboard", path: "/client/dashboard" },//has info of everything related to that client - like client activity, how many leads we got and everything like that
+            { label: "Analytics", path: "/client/analytics" },//analytics of chatbot performance, like how many conversations, how many leads, how many active users and all that stuff
         ],
     },
     {
@@ -38,23 +37,22 @@ const navSections: NavSection[] = [
             { label: "Conversations", path: "/client/conversations" },
             { label: "Leads", path: "/client/leads" },
             { label: "Test Chatbot", path: "/client/test-chatbot" },
+            { label: "My subscription", path: "/client/my-subscription" },//can see the details of his subscription, like when it expires, what plan is he on and also before expiration can update the plan.
         ],
     },
-    {
-        title: "SUPPORT",
-        items: [
-            { label: "Tickets", path: "/client/tickets" },
-            { label: "Active Logs", path: "/client/active-logs" },
-            { label: "User Feedback", path: "/client/user-feedback" },
-        ],
-    },
+    // {
+    //     title: "SUPPORT",
+    //     items: [
+    //         { label: "Tickets", path: "/client/tickets" },
+    //         { label: "Active Logs", path: "/client/active-logs" },
+    //         { label: "User Feedback", path: "/client/user-feedback" },
+    //     ],
+    // },
     {
         title: "SYSTEM",
         items: [
-            { label: "Settings", path: "/client/settings" },
-            { label: "API Management", path: "/client/api-management" },
-            { label: "Integrations", path: "/client/integrations" },
-            { label: "Security", path: "/client/security" },
+            { label: "Settings", path: "/client/settings" },//client can change his account settings, like changing the theme, changing the colors, changing the font and all that stuff
+            // { label: "Integrations", path: "/client/integrations" },//integrating with teams, slack, whatsapp
         ],
     },
 ];
