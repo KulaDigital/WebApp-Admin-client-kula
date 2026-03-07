@@ -4,6 +4,7 @@ import Card from '../../components/FormCard';
 import Input from '../../components/FormInput';
 import Select from '../../components/FormSelect';
 import { adminClientsApi, adminUsersApi } from '../../api';
+import { useNotification } from '../../components/Notification';
 
 interface AddUserProps {
   close: () => void;
@@ -15,6 +16,7 @@ interface ClientOption {
 }
 
 const AddUser: React.FC<AddUserProps> = ({ close }) => {
+  const { showNotification, NotificationComponent } = useNotification();
   const [formData, setFormData] = useState({
     supabaseUserId: '',
     userName: '',
@@ -95,7 +97,7 @@ const AddUser: React.FC<AddUserProps> = ({ close }) => {
       const response = await adminUsersApi.createUser(payload);
 
       if (response.success) {
-        alert('User created successfully!');
+        showNotification('User created successfully!', 'success');
         close();
       }
     } catch (err: any) {
@@ -190,6 +192,7 @@ const AddUser: React.FC<AddUserProps> = ({ close }) => {
           disabled={loading}
         />
       </div>
+      {NotificationComponent}
     </div>
   );
 };

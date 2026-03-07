@@ -3,10 +3,12 @@ import Button from "../../components/Button";
 import Card from "../../components/FormCard";
 import Input from "../../components/FormInput";
 import Position from "../../components/FormPosition";
+import StarterSuggestions from "../../components/StarterSuggestions";
 import axiosInstance from "../../utils/instance";
 import publicAxios from "../../utils/publicInstance";
 import { getCSSVariableValueWithDefault } from "../../utils/cssVariables";
 import type { SubscriptionPlan, SubscriptionPeriod } from "../../types";
+import { useNotification } from "../../components/Notification";
 
 type PositionType = "bottom-right" | "bottom-left";
 type AddClientProps = { close: () => void };
@@ -29,6 +31,7 @@ interface ProgressState {
 }
 
 export default function AddClient({ close }: AddClientProps) {
+    const { showNotification, NotificationComponent } = useNotification();
     const [currentStep, setCurrentStep] = useState<StepType>("company-info");
     const [position, setPosition] = useState<PositionType>("bottom-right");
     const [error, setError] = useState<string | null>(null);
@@ -43,6 +46,9 @@ export default function AddClient({ close }: AddClientProps) {
         secondaryColor: getCSSVariableValueWithDefault('--color-secondary', '#0A2540'),
         message: "Hi! 👋 I'm Greeto, your AI assistant. How can I help you today?",
     }));
+
+    // Starter suggestions
+    const [starterSuggestions, setStarterSuggestions] = useState<string[]>([]);
 
     // Subscription configuration
     const [subscription, setSubscription] = useState<{
@@ -76,12 +82,8 @@ export default function AddClient({ close }: AddClientProps) {
         }
     }, [currentStep]);
 
-    // Auto-trigger embeddings when scraping completes
-    useEffect(() => {
-        if (currentStep === "generate-embeddings" && clientData?.api_key && !embeddingsProgress.isProcessing && embeddingsProgress.status === "idle") {
-            handleGenerateEmbeddings(clientData.api_key);
-        }
-    }, [currentStep]);
+    // NOTE: Embeddings are triggered directly from monitorScrapingProgress on completion.
+    // No useEffect trigger here to avoid double-invocation race condition.
 
     const handleInputChange = (field: string, value: string) => {
         setForm({ ...form, [field]: value });
@@ -106,6 +108,7 @@ export default function AddClient({ close }: AddClientProps) {
                     position: position,
                     welcomeMessage: form.message,
                 },
+                starter_suggestions: starterSuggestions.length > 0 ? starterSuggestions : null,
             };
 
             // Add subscription config if provided
@@ -292,11 +295,20 @@ export default function AddClient({ close }: AddClientProps) {
 
             console.log("[handleGenerateEmbeddings] Generate response:", response.data);
 
-            // Check if response indicates success (could be success field or just status)
-            if (response.data.success !== false && response.status === 200) {
-                console.log("[handleGenerateEmbeddings] Starting to monitor embeddings progress");
-                // Don't await - let monitoring run in background
-                monitorEmbeddingsProgress(apiKey);
+            if (response.data.success && response.data.jobId) {
+                // Async job started — monitor via job endpoint
+                console.log("[handleGenerateEmbeddings] Job started with ID:", response.data.jobId);
+                monitorEmbeddingsProgress(response.data.jobId, apiKey);
+            } else if (response.data.success && response.data.pendingCount === 0) {
+                // Nothing to embed — all chunks already have embeddings
+                console.log("[handleGenerateEmbeddings] All chunks already embedded");
+                setEmbeddingsProgress({
+                    isProcessing: false,
+                    progress: 100,
+                    status: "All chunks already have embeddings",
+                    error: null,
+                });
+                setCurrentStep("complete");
             } else {
                 console.error("[handleGenerateEmbeddings] API returned error");
                 setEmbeddingsProgress((prev) => ({
@@ -315,12 +327,12 @@ export default function AddClient({ close }: AddClientProps) {
         }
     };
 
-    const monitorEmbeddingsProgress = (apiKey: string): void => {
+    const monitorEmbeddingsProgress = (jobId: number, apiKey: string): void => {
         const maxAttempts = 360; // 6 minutes with 1-second intervals
         let attempts = 0;
         let isCleared = false;
 
-        console.log("[monitorEmbeddingsProgress] Starting embeddings monitor");
+        console.log(`[monitorEmbeddingsProgress] Starting embeddings monitor for jobId: ${jobId}`);
 
         const pollInterval = setInterval(async () => {
             if (isCleared) {
@@ -330,35 +342,57 @@ export default function AddClient({ close }: AddClientProps) {
 
             try {
                 attempts++;
-                console.log(`[Embeddings Poll] Attempt ${attempts}/${maxAttempts}`);
+                console.log(`[Embeddings Poll] Attempt ${attempts}/${maxAttempts}, JobId: ${jobId}`);
                 
-                const response = await publicAxios.get(`/embeddings/stats?client_id=${clientData?.id}`, {
+                const response = await publicAxios.get(`/embeddings/job/${jobId}`, {
                     headers: { "x-api-key": apiKey },
                 });
 
                 console.log(`[Embeddings Response]`, response.data);
 
-                const { stats } = response.data;
-                const percentage = stats?.percentComplete || 0;
-                const completed = stats?.withEmbeddings || 0;
-                const total = stats?.totalChunks || 0;
-                const cost = stats?.costSoFar || 0;
-                const pending = stats?.pendingEmbeddings || 0;
+                const { status, progress, cost, error: jobError } = response.data;
 
-                console.log(`[Embeddings Progress] Percentage: ${percentage}%, Completed: ${completed}/${total}, Pending: ${pending}, Cost: $${cost.toFixed(4)}`);
+                if (jobError) {
+                    console.error("[Embeddings Error] Job error returned:", jobError);
+                    setEmbeddingsProgress({
+                        isProcessing: false,
+                        progress: 0,
+                        status: "Failed",
+                        error: jobError,
+                    });
+                    isCleared = true;
+                    clearInterval(pollInterval);
+                    return;
+                }
+
+                const percentage = progress?.percentage || 0;
+                const processed = progress?.processed || 0;
+                const total = progress?.totalChunks || 0;
+                const estimatedCost = cost?.estimatedCost || "0.0000";
+
+                console.log(`[Embeddings Progress] Status: ${status}, Percentage: ${percentage}%, Processed: ${processed}/${total}, Cost: $${estimatedCost}`);
 
                 setEmbeddingsProgress({
-                    isProcessing: pending > 0,
+                    isProcessing: status !== "completed" && status !== "failed",
                     progress: percentage,
-                    status: `Embedded ${completed}/${total} chunks • Cost: $${cost.toFixed(4)}`,
+                    status: `Embedded ${processed}/${total} chunks • Cost: $${estimatedCost}`,
                     error: null,
                 });
 
-                if (pending === 0 || percentage === 100) {
+                if (status === "completed") {
                     console.log("[Embeddings Complete] All embeddings generated");
                     isCleared = true;
                     clearInterval(pollInterval);
                     setCurrentStep("complete");
+                } else if (status === "failed") {
+                    console.error("[Embeddings Failed] Job failed");
+                    isCleared = true;
+                    clearInterval(pollInterval);
+                    setEmbeddingsProgress((prev) => ({
+                        ...prev,
+                        isProcessing: false,
+                        error: jobError || "Embedding generation failed",
+                    }));
                 } else if (attempts >= maxAttempts) {
                     console.error("[Embeddings Timeout] Max attempts reached");
                     isCleared = true;
@@ -561,6 +595,11 @@ export default function AddClient({ close }: AddClientProps) {
                                 onChange={(e) => handleInputChange("message", e.target.value)}
                             />
                         </div>
+
+                        <StarterSuggestions
+                            value={starterSuggestions}
+                            onChange={setStarterSuggestions}
+                        />
                     </Card>
                 </>
             )}
@@ -797,7 +836,7 @@ export default function AddClient({ close }: AddClientProps) {
                                                 <button
                                                     onClick={() => {
                                                         navigator.clipboard.writeText(clientData.embed_script);
-                                                        alert("Script copied to clipboard!");
+                                                        showNotification('Script copied to clipboard!', 'success');
                                                     }}
                                                     style={{ backgroundColor: 'var(--color-primary)' }}
                                                     className="flex items-center gap-2 px-3 py-1.5 text-white text-xs font-medium rounded transition-all duration-200 hover:opacity-90"
@@ -990,6 +1029,7 @@ export default function AddClient({ close }: AddClientProps) {
                     </div>
                 </div>
             )}
+            {NotificationComponent}
         </div>
     );
 }

@@ -66,26 +66,26 @@ const WebScraper: React.FC = () => {
     }
   };
 
-  const generateEmbeddings = async () => {
+  const generateEmbeddingsForUrl = async (url: string) => {
     try {
-      console.log('[WebScraper] Starting embeddings generation');
+      console.log('[WebScraper] Regenerating embeddings for URL:', url);
       
       const response = await axiosInstance.post(
-        '/embeddings/generate',
-        {}
+        '/embeddings/regenerate',
+        { url }
       );
 
       console.log('[WebScraper] Embeddings response:', response.data);
       
       if (response.data.success) {
-        console.log('[WebScraper] Embeddings generated successfully');
+        console.log('[WebScraper] Embeddings regenerated successfully');
         return response.data;
       } else {
-        console.error('[WebScraper] Embeddings generation failed:', response.data);
+        console.error('[WebScraper] Embeddings regeneration failed:', response.data);
         throw new Error(response.data.error || 'Failed to generate embeddings');
       }
     } catch (err) {
-      console.error('[WebScraper] Error generating embeddings:', err);
+      console.error('[WebScraper] Error regenerating embeddings:', err);
       throw err;
     }
   };
@@ -107,10 +107,10 @@ const WebScraper: React.FC = () => {
           `✓ Successfully updated ${response.data.results?.[0]?.chunksCreated || 1} chunks for this page`
         );
         
-        // Then generate embeddings for the newly scraped content
+        // Then regenerate embeddings for the specific URL
         try {
-          console.log('[WebScraper] Calling generate embeddings after scraping');
-          await generateEmbeddings();
+          console.log('[WebScraper] Calling regenerate embeddings for URL:', url);
+          await generateEmbeddingsForUrl(url);
           
           // Show final success message with embedding info
           setSuccessMessage(

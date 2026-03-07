@@ -13,6 +13,7 @@ import Login from "./login/Login";
 import NoAccess from "./pages/NoAccess";
 import ClientDashboard from "./pages/clientPanel/ClientDashboard";
 import ChatbotConfiguration from "./pages/clientPanel/ChatbotConfiguration";
+import TestChatbotPage from "./pages/clientPanel/TestChatbotPage";
 import Conversations from "./pages/clientPanel/Conversations";
 import WebScraper from "./pages/clientPanel/WebScraper";
 import Leads from "./pages/clientPanel/Leads";
@@ -72,7 +73,7 @@ const App = () => {
           <Route path="analytics" element={<ComingSoon title="Analytics" description="View your chatbot analytics and performance metrics" icon="stats" />} />
           <Route path="web-scraper" element={<WebScraper />} />
           <Route path="leads" element={<Leads />} />
-          <Route path="test-chatbot" element={<ComingSoon title="Test Chatbot" description="Test your chatbot in real-time with live conversations" icon="chat" />} />
+          <Route path="test-chatbot" element={<TestChatbotPage />} />
           <Route path="tickets" element={<ComingSoon title="Support Tickets" description="View your support tickets" icon="support" />} />
           <Route path="active-logs" element={<ComingSoon title="Activity Logs" description="View system activity logs" icon="logs" />} />
           <Route path="user-feedback" element={<ComingSoon title="User Feedback" description="View user feedback" icon="feedback" />} />

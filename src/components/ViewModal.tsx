@@ -1,5 +1,6 @@
 import React from 'react';
 import Button from './Button';
+import { useNotification } from './Notification';
 
 interface ViewModalProps {
   open: boolean;
@@ -21,6 +22,7 @@ interface ViewModalProps {
 }
 
 const ViewModal: React.FC<ViewModalProps> = ({ open, onClose, title, fields, actions }) => {
+  const { showNotification, NotificationComponent } = useNotification();
   if (!open) return null;
 
   return (
@@ -53,7 +55,7 @@ const ViewModal: React.FC<ViewModalProps> = ({ open, onClose, title, fields, act
                         onClick={() => {
                           if (typeof field.value === 'string') {
                             navigator.clipboard.writeText(field.value);
-                            alert("Script copied to clipboard!");
+                            showNotification('Script copied to clipboard!', 'success');
                           }
                         }}
                         style={{ backgroundColor: 'var(--color-primary)', color: 'white' }}
@@ -118,6 +120,7 @@ const ViewModal: React.FC<ViewModalProps> = ({ open, onClose, title, fields, act
           )}
         </div>
       </div>
+      {NotificationComponent}
     </div>
   );
 };
