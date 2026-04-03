@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axiosInstance from '../../utils/instance';
+import { clientApi } from '../../api';
 import { useNotification } from '../../components/Notification';
 
 interface Lead {
@@ -36,29 +37,61 @@ const Leads: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'new' | 'contacted' | 'qualified' | 'won' | 'lost'>('all');
   const [updatingStatusId, setUpdatingStatusId] = useState<number | null>(null);
+  const [clientId, setClientId] = useState<number | null>(null);
 
   const LIMIT = 20;
 
   useEffect(() => {
-    fetchLeads();
-  }, [currentPage, statusFilter, searchQuery]);
+    fetchClientId();
+  }, []);
+
+  useEffect(() => {
+    if (clientId) {
+      fetchLeads();
+    }
+  }, [clientId, currentPage, statusFilter, searchQuery]);
+
+  const fetchClientId = async () => {
+    try {
+      const data = await clientApi.getClientProfile();
+      const id = data.client_id || (data as any).user_client_id;
+      if (id) {
+        setClientId(id);
+      } else {
+        setError('Unable to load leads - client ID not found');
+        setLoading(false);
+      }
+    } catch (err) {
+      console.error('Error fetching client ID:', err);
+      setError('Failed to load client information');
+      setLoading(false);
+    }
+  };
 
   const fetchLeads = async () => {
     try {
       setLoading(true);
       setError(null);
 
-      const offset = (currentPage - 1) * LIMIT;
-      let query = `/leads?limit=${LIMIT}&offset=${offset}`;
-
-      if (searchQuery.trim()) {
-        query += `&q=${encodeURIComponent(searchQuery)}`;
+      if (!clientId) {
+        setError('Client ID not available');
+        return;
       }
 
-      const response = await axiosInstance.get(query);
+      const offset = (currentPage - 1) * LIMIT;
+      const params: { q?: string; limit: number; offset: number } = {
+        limit: LIMIT,
+        offset
+      };
 
-      if (response.data.success) {
-        let filteredLeads = response.data.items || [];
+      if (searchQuery.trim()) {
+        params.q = searchQuery;
+      }
+
+      const response = await clientApi.getClientLeads(clientId, params);
+
+      if (response.success || response.items) {
+        let filteredLeads = response.items || [];
 
         // Client-side filtering for status
         if (statusFilter !== 'all') {
@@ -68,7 +101,7 @@ const Leads: React.FC = () => {
         setLeads(filteredLeads);
 
         // Calculate pagination
-        const total = response.data.total || 0;
+        const total = response.total || 0;
         const totalPages = Math.ceil(total / LIMIT);
 
         setPagination({

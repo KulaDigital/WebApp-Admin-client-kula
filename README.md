@@ -15,7 +15,46 @@ This project implements a comprehensive admin and client management system with:
 
 ## ✨ Key Features
 
-### Core Authentication & Security
+### 📊 Analytics & Insights ⭐ NEW
+- **Client Analytics Dashboard** - Detailed metrics with charts
+  - 30-day conversation trends visualization
+  - Lead status breakdown pie charts
+  - Real-time engagement metrics
+  - Recent activity with pagination
+- **Admin Usage Dashboard** - Resource tracking
+  - Live conversation & lead metrics
+  - Multi-column sortable tables
+  - Advanced search & filtering
+  - CSV export functionality
+- **Subscription Insights** - Plan performance data
+  - Usage metrics with progress bars
+  - Plan comparison tables
+  - Trial countdown display
+
+### 🔐 Account Management ⭐ NEW
+- **Client Settings Page** - User account management
+  - Profile information display
+  - Company details
+  - Subscription status
+  - Widget configuration preview
+- **Admin Settings Page** - System management
+  - Administrator profile
+  - System-wide statistics
+  - API configuration
+  - Quick action shortcuts
+
+### 💳 Subscription Management ⭐ NEW
+- **My Subscription Page** - Client subscription portal
+  - Current plan display
+  - Usage metrics with visual indicators
+  - Plan upgrade/downgrade requests
+  - Cancellation management
+  - Detailed plan comparison
+- **Plan Details Component** - Reusable billing display
+  - Monthly & yearly pricing
+  - Feature comparison table
+  - Plan badges & recommendations
+  - Status indicators
 - ✅ Email/password authentication with Supabase
 - ✅ Session management with automatic token refresh
 - ✅ Role-based access control (super_admin & client)
@@ -72,7 +111,9 @@ src/
 ├── api/                        # ⭐ NEW: Centralized API layer with organized endpoints
 │   └── index.ts                # Authentication, Client, Admin, Public API endpoints
 ├── components/
-│   ├── Icon.tsx                # ⭐ NEW: SVG-based reusable icon component
+│   ├── Icon.tsx                # ⭐ NEW: SVG-based reusable icon component (80+ icons)
+│   ├── TopBar.tsx              # ⭐ NEW: Dashboard navigation with search & breadcrumbs
+│   ├── PlanDetails.tsx         # ⭐ NEW: Billing plans comparison component
 │   ├── Button.tsx              # Reusable button component (enhanced with CSS vars)
 │   ├── Drawer.tsx              # Drawer component
 │   ├── ProtectedRoute.tsx       # Route guard with role validation
@@ -104,25 +145,28 @@ src/
 │   ├── ComingSoon.tsx          # Coming Soon component (uses Icon component)
 │   ├── adminPanel/
 │   │   ├── Dashboard.tsx       # (uses Icon component for stats)
-│   │   ├── Analytics.tsx       # (uses Icon component for stats)
+│   │   ├── Analytics.tsx       # Analytics page with charts
 │   │   ├── Clients.tsx         # (uses centralized API)
 │   │   ├── Users.tsx           # (uses centralized API)
 │   │   ├── Subscription.tsx    # Subscription management
 │   │   ├── Tickets.tsx         # Support tickets listing
-│   │   ├── Settings.tsx        # Platform settings
+│   │   ├── Settings.tsx        # ⭐ ENHANCED: Profile & system info
+│   │   ├── Usage.tsx           # ⭐ ENHANCED: Live resource tracking & export
 │   │   ├── Security.tsx        # Security settings
 │   │   ├── Intergrations.tsx   # (uses Icon component)
 │   │   ├── Chatbot.tsx         # (uses Icon component for stats)
 │   │   ├── Billing.tsx         # Billing Coming Soon
-│   │   ├── Usage.tsx           # Usage Coming Soon (uses Icon component)
 │   │   └── AddClient.tsx       # Client creation wizard
 │   ├── clientPanel/
-│   │   ├── ClientDashboard.tsx # Dashboard with stats & subscription display ⭐ ENHANCED
-│   │   ├── ChatbotConfiguration.tsx  # Widget config with embed script & guide ⭐ ENHANCED
+│   │   ├── ClientDashboard.tsx # ⭐ ENHANCED: Real-time metrics & activity
+│   │   ├── Analytics.tsx           # ⭐ NEW: Comprehensive analytics with charts
+│   │   ├── ClientSettings.tsx  # ⭐ NEW: Account & profile management
+│   │   ├── MySubscription.tsx  # ⭐ NEW: Subscription management & plan comparison
+│   │   ├── ChatbotConfiguration.tsx  # Widget config with embed script & guide
 │   │   ├── Conversations.tsx   # Conversation viewer
 │   │   ├── WebScraper.tsx      # URL management
-│   │   ├── Leads.tsx           # ⭐ NEW: Leads management & tracking
-│   │   └── Tickets.tsx         # Support tickets Coming Soon
+│   │   ├── Leads.tsx           # Lead management & tracking
+│   │   └── TestChatbotPage.tsx # Chatbot testing interface
 │   └── NoAccess.tsx            # 403 error page
 ├── utils/
 │   ├── supabase.ts             # Supabase client initialization
@@ -277,20 +321,31 @@ src/
   - publicApi (public endpoints)
 
 ⭐ **NEW UI Components:**
-- `src/components/Icon.tsx` - **SVG-based reusable icon system** ⭐ NEW
+- `src/components/Icon.tsx` - SVG-based reusable icon system (80+ icons)
+- `src/components/TopBar.tsx` - Dashboard navigation with search & breadcrumbs ⭐ NEW
+- `src/components/PlanDetails.tsx` - Billing plans comparison component ⭐ NEW
 
-⭐ **Dashboard Features:**
+⭐ **Dashboard & Admin Features:**
 - `src/pages/ComingSoon.tsx` - Coming Soon component with Icon support
 - `src/utils/subscriptionApi.ts` - Subscription management utilities
-- `src/pages/adminPanel/Subscription.tsx` - Admin subscription management interface
-- `src/pages/adminPanel/Tickets.tsx` - Support tickets listing and filtering
-- `src/pages/clientPanel/ChatbotConfiguration.tsx` - Widget customization with embed script guide
+- `src/pages/adminPanel/Dashboard.tsx` - Admin dashboard with metrics
+- `src/pages/adminPanel/Settings.tsx` - ⭐ ENHANCED: Admin profile & system info
+- `src/pages/adminPanel/Usage.tsx` - ⭐ ENHANCED: Live resource tracking & analytics
+- `src/pages/adminPanel/Subscription.tsx` - Admin subscription management
+- `src/pages/adminPanel/Tickets.tsx` - Support tickets listing
+
+⭐ **Client Portal Features:**
+- `src/pages/clientPanel/ClientDashboard.tsx` - ⭐ ENHANCED: Real-time metrics & activity
+- `src/pages/clientPanel/Analytics.tsx` - ⭐ NEW: Comprehensive analytics with charts
+- `src/pages/clientPanel/ClientSettings.tsx` - ⭐ NEW: Account & profile management
+- `src/pages/clientPanel/MySubscription.tsx` - ⭐ NEW: Subscription management & plans
+- `src/pages/clientPanel/ChatbotConfiguration.tsx` - Widget customization with embed guide
 - `src/pages/clientPanel/WebScraper.tsx` - URL and scraping management
 - `src/pages/clientPanel/Conversations.tsx` - Conversation viewer with pagination
-- `src/pages/clientPanel/Leads.tsx` - **Lead management page** ⭐ NEW
+- `src/pages/clientPanel/Leads.tsx` - Lead management & tracking
+- `src/pages/clientPanel/TestChatbotPage.tsx` - Chatbot testing interface
 - `src/layout/clientLayout/ClientSidebar.tsx` - Client sidebar with subscription badge
 - `src/layout/clientLayout/ClientLayout.tsx` - Client layout
-- `src/pages/clientPanel/ClientDashboard.tsx` - Client dashboard with subscription display
 
 ## 🔐 Authentication Flow
 
@@ -474,6 +529,7 @@ The axios instance automatically:
 - **tailwindcss** `^4.1.18` - Utility-first CSS
 - **@emotion/react** `^11.14.0` - CSS-in-JS
 - **@mui/material** `^7.3.7` - Material Design components
+- **recharts** `^2.10.0+` - React charting library for analytics ⭐ NEW
 
 ### Development Tools
 - **eslint** `^9.0.0` - Code linting
@@ -563,23 +619,58 @@ The axios instance automatically:
 - ✅ Centered loading spinner with fixed positioning
 
 ### Client Dashboard Features
-- ✅ Client dashboard with knowledge base statistics
-- ✅ Client dashboard with subscription display ⭐ NEW
-- ✅ Chatbot configuration interface (colors, position, welcome message)
-- ✅ Chatbot configuration with embed script display ⭐ NEW
-- ✅ Chatbot configuration with integration guide modal ⭐ NEW
-- ✅ Web scraper management with URL listing
-- ✅ Rescrape functionality with auto-embeddings generation
-- ✅ Conversations viewer with message thread display
-- ✅ Client-side filtering and pagination
-- ✅ Quick action shortcuts (My Chatbot, Analytics, etc.)
-- ✅ Recent updates and getting started guidance
-- ✅ **Leads Management Page** ⭐ NEW
-  - Search and filter leads by status
-  - Real-time status updates
-  - Contact information management
-  - Pagination for large lead lists
-  - Stats overview (total, new, qualified, won)
+- ✅ Client dashboard with real-time metrics
+- ✅ Conversation tracking & activity display
+- ✅ Lead metrics and statistics
+- ✅ Subscription information display
+- ✅ Recent activity table with pagination
+- ✅ Quick action shortcuts
+
+### New Client Portal Pages ⭐
+- ✅ **Analytics Page** - Complete analytics dashboard with charts
+  - Conversation trends (Bar charts)
+  - Lead status breakdown (Pie charts)
+  - System-wide metrics
+  - Recent activity logs
+- ✅ **Settings Page** - Account & profile management
+  - User profile information
+  - Company details
+  - Subscription status
+  - Widget configuration display
+- ✅ **My Subscription Page** - Subscription management
+  - Current plan overview
+  - Usage metrics with progress bars
+  - Plan comparison table
+  - Upgrade/Downgrade/Cancel requests
+
+### New Admin Pages ⭐
+- ✅ **Enhanced Settings Page** - System management
+  - Administrator profile display
+  - System statistics (clients, users, subscriptions)
+  - API configuration info
+  - Quick navigation actions
+- ✅ **Enhanced Usage Page** - Resource analytics
+  - Live data integration
+  - Search & multi-column sort
+  - Status filtering
+  - CSV export
+  - Client usage breakdown
+
+### New Shared Components ⭐
+- ✅ **TopBar Component** - Smart dashboard navigation
+  - Breadcrumb navigation
+  - Global page search with dropdown
+  - Notification bell
+- ✅ **PlanDetails Component** - Billing display
+  - Plan overview cards
+  - Detailed comparison tables
+  - Feature inclusion indicators
+
+### Enhanced Icon System ⭐
+- ✅ Extended to 80+ semantic SVG icons
+- ✅ New icons: live, bell, home, book, logs, storage, subscription, tickets, etc.
+- ✅ Consistent sizing and styling
+- ✅ Full accessibility support
 
 ### UI/UX Enhancements
 - ✅ Icon System component replacing all emojis
@@ -756,6 +847,70 @@ function MyComponent() {
 }
 ```
 
+### Using the Analytics Components ⭐ NEW
+
+```typescript
+// Using Recharts in analytics pages
+import { BarChart, Bar, PieChart, Pie, ResponsiveContainer } from 'recharts';
+
+// Conversation trends data
+const trendData = [
+  { date: 'Jan 15', count: 12 },
+  { date: 'Jan 16', count: 19 },
+  // ...
+];
+
+<ResponsiveContainer width="100%" height={400}>
+  <BarChart data={trendData}>
+    <Bar dataKey="count" fill="var(--color-primary)" />
+  </BarChart>
+</ResponsiveContainer>
+
+// Lead status breakdown
+const leadStatusData = [
+  { name: 'New', value: 24 },
+  { name: 'Contacted', value: 12 },
+  { name: 'Qualified', value: 8 },
+];
+
+<PieChart>
+  <Pie dataKey="value" data={leadStatusData} />
+</PieChart>
+```
+
+### Using the TopBar Component ⭐ NEW
+
+```typescript
+import TopBar from '@/components/TopBar';
+
+const navItems = [
+  { label: 'Dashboard', path: '/SA/dashboard', icon: 'dashboard' },
+  { label: 'Clients', path: '/SA/clients', icon: 'users' },
+  { label: 'Usage', path: '/SA/usage', icon: 'analytics' },
+];
+
+<TopBar 
+  panelLabel="Admin Panel" 
+  basePath="/SA/dashboard"
+  navItems={navItems}
+/>
+```
+
+### Using the PlanDetails Component ⭐ NEW
+
+```typescript
+import PlanDetails from '@/components/PlanDetails';
+
+// Display all available billing plans with comparison
+<PlanDetails currentPlanCode="professional" />
+
+// Component handles:
+// - Fetching billing plans from public API
+// - Displaying plan cards with pricing
+// - Showing detailed comparison table
+// - Feature inclusion indicators
+```
+
 ## 🤝 Contributing
 
 1. Create a feature branch: `git checkout -b feature/your-feature`
@@ -794,19 +949,128 @@ This project is part of the Kula suite. See LICENSE file for details.
 - Check backend is running on correct port
 - Verify `VITE_API_BASE_URL` matches backend URL
 
-## 📞 Support
+## �️ Available Routes
+
+### Admin Routes (`/SA/*`)
+- `/SA/dashboard` - Admin dashboard with metrics
+- `/SA/clients` - Client management (CRUD)
+- `/SA/users` - User management
+- `/SA/subscription` - Subscription management
+- `/SA/usage` - Resource usage analytics ⭐ ENHANCED
+- `/SA/settings` - Admin settings & system info ⭐ ENHANCED
+- `/SA/tickets` - Support tickets
+- `/SA/chatbot` - Chatbot management
+- `/SA/integrations` - Integration settings
+- `/SA/security` - Security settings
+- `/SA/analytics` - Platform analytics
+
+### Client Routes (`/client/*`)
+- `/client/` or `/client/dashboard` - Client dashboard with activity ⭐ ENHANCED
+- `/client/analytics` - Detailed analytics & metrics ⭐ NEW
+- `/client/settings` - Account & profile settings ⭐ NEW
+- `/client/my-subscription` - Subscription management ⭐ NEW
+- `/client/conversations` - Conversation history
+- `/client/leads` - Lead management & tracking
+- `/client/chatbot-config` - Widget configuration
+- `/client/web-scraper` - URL scraping management
+- `/client/test-chatbot` - Chatbot testing interface
+
+### Public Routes
+- `/login` - Login page
+- `/no-access` - Access denied (403) page
+- `/coming-soon` - Coming soon placeholder
+
+## �📞 Support
 
 For issues or questions, contact the development team or file an issue in the repository.
 
 ---
 
-**Last Updated:** February 15, 2026
+**Last Updated:** April 3, 2026
 **Status:** Production Ready ✅
-**Latest Feature Set:** Dashboard Enhancements v3.0 ⭐
-  - **Icon System** - SVG-based reusable component (50+ icons)
-  - **Centralized API Layer** - Organized endpoint groups
-  - **Leads Management** - Full lead tracking and management
-  - **Enhanced ChatbotConfiguration** - Embed script guide
-  - **Enhanced ClientDashboard** - Subscription display
-  - **Enhanced ClientSidebar** - Dynamic subscription badge
-  - **Color Palette Enhancements** - New CSS variables
+**Latest Feature Set:** Comprehensive Admin & Client Portal v4.0 ⭐
+
+## 🎉 Recent Enhancements (v4.0)
+
+### New Client Portal Pages ⭐
+- **Analytics Page** (`/client/analytics`) - Comprehensive analytics dashboard
+  - Conversation trends chart (30-day history)
+  - Real-time engagement metrics
+  - Lead status breakdown pie chart
+  - Recent activity table with pagination
+  - Multiple stat cards tracking key metrics
+- **Client Settings Page** (`/client/settings`) - Account management
+  - User profile information
+  - Company details display
+  - Subscription information
+  - Widget configuration display
+- **My Subscription Page** (`/client/my-subscription`) - Subscription management
+  - Current plan display with trial countdown
+  - Usage metrics with progress bars
+  - Available plans comparison table
+  - Upgrade/Downgrade/Cancel request forms
+  - Plan details comparison component
+
+### New Admin Features ⭐
+- **Enhanced Settings Page** - Admin dashboard settings
+  - Admin profile section
+  - System information (total clients, users, subscriptions)
+  - API configuration display
+  - Quick action buttons
+- **Enhanced Usage Page** - Resource tracking
+  - Live data integration from conversations & leads APIs
+  - Multi-column sorting (company, conversations, leads)
+  - Search and filter functionality
+  - CSV export capability
+  - Client usage breakdown table
+
+### New Shared Components ⭐
+- **TopBar Component** - Smart navigation header
+  - Breadcrumb navigation
+  - Global search with dropdown results
+  - Notification bell
+  - Current page indicator
+- **PlanDetails Component** - Billing plan display
+  - Plan overview cards with pricing
+  - Detailed comparison table
+  - Feature inclusion indicators
+  - Support for multiple billing currencies
+
+### New Icon Assets ⭐
+- 30+ new SVG icons added to `src/assets/icons/`
+  - Navigation: home, menu
+  - Data & Analytics: live, trending, search
+  - Communication: bell, feedback
+  - Business: book, subscription, tickets
+  - System: logs, info
+  - UI: arrow-right, download, and more
+- All icons use semantic naming and support configurable sizing
+
+### Enhanced Data Integration ⭐
+- **Real-time Metrics** - All dashboards now fetch live data
+- **Batch Optimization** - Parallel API calls for performance
+- **Error Handling** - Graceful fallbacks and retry mechanisms
+- **Pagination Support** - Large data sets handled efficiently
+- **Search & Filter** - Advanced filtering on usage/leads pages
+
+### Enhanced Data Integration ⭐
+- **Real-time Metrics** - All dashboards now fetch live data
+- **Batch Optimization** - Parallel API calls for performance
+- **Error Handling** - Graceful fallbacks and retry mechanisms
+- **Pagination Support** - Large data sets handled efficiently
+- **Search & Filter** - Advanced filtering on usage/leads pages
+
+### Technical Improvements ⭐
+- **Analytics Charting** - Integrated Recharts for data visualization
+- **Form Validation** - Modal forms for subscription requests
+- **Progress Indicators** - Visual feedback for resource usage
+- **Responsive Tables** - Scrollable overflow on mobile
+- **Loading States** - Skeleton loaders and smooth transitions
+- **Recharts Integration** - `^2.10.0+` for professional charts
+
+### Documentation Added ⭐
+- **Route Documentation** - Complete list of available routes
+- **Component Examples** - Usage patterns for TopBar, PlanDetails
+- **API Integration Examples** - How to use new API methods
+- **Icon System** - 80+ semantic SVG icons with examples
+- **Key Files** - Updated file references for all new pages
