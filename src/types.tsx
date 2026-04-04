@@ -5,6 +5,14 @@ export type BadgeVariant = 'success' | 'warning' | 'error' | 'info' | 'primary' 
 export type ChangeType = 'positive' | 'negative';
 export type IconColor = 'blue' | 'purple' | 'green' | 'orange' | 'red';
 
+// Auth Types
+export type UserRole = 'super_admin' | 'client';
+
+export interface UserRoleInfo {
+  role: UserRole;
+  clientId?: number | string;
+}
+
 // Stat Card Props
 export interface StatCardProps {
   icon: string;
@@ -39,13 +47,36 @@ export interface Chatbot {
   status: string;
 }
 
-// Subscription Data
+// Subscription Status Type (3 valid values - CLIENT ROLE ONLY)
+// Note: 'inactive' is NOT a valid subscription status
+// Client inactive status is managed separately in clients table
+export type SubscriptionStatus = 'active' | 'expired' | 'canceled';
+
+// Subscription Period Type
+export type SubscriptionPeriod = 'monthly' | 'yearly';
+
+// Subscription Plan Type
+export type SubscriptionPlan = 'professional' | 'business' | 'enterprise';
+
+// Subscription Object (from API)
+// IMPORTANT: Only client role users have subscriptions
+// Super admin users (role='super_admin') will never have subscriptions
+export interface SubscriptionObject {
+  plan: SubscriptionPlan;
+  period: SubscriptionPeriod;
+  status: SubscriptionStatus;
+  is_trial: boolean;
+  started_at: string; // ISO date string
+  ends_at: string; // ISO date string
+  is_entitled: boolean; // Computed: status === 'active' AND ends_at > now()
+}
+
+// Subscription Data (for table display)
 export interface Subscription {
+  client_id: number;
   client: string;
-  plan: string;
-  price: string;
-  nextBilling: string;
-  status: string;
+  subscription: SubscriptionObject | null;
+  has_subscription: boolean;
 }
 
 // Recent Activity Data
