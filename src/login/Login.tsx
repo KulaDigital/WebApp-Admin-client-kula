@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import Icon from "../components/Icon";
+import { Eye, EyeOff } from "lucide-react";
+import GreetoIcon from "../assets/GreetoIconWhite.svg";
 
 export default function Login() {
     const navigate = useNavigate();
     const { signIn, authLoading, roleLoading, session, userRole } = useAuth();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState("");
 
     // Redirect if already authenticated with a role
@@ -46,8 +48,8 @@ export default function Login() {
                 {/* Logo Section */}
                 <div className="text-center mb-8">
                     <div className="flex items-center justify-center gap-3 mb-4">
-                        <div className="w-12 h-12 bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-hover)] rounded-lg flex items-center justify-center">
-                            <Icon name="chat" size="lg" decorative className="text-white" />
+                        <div className="w-12 h-12 rounded-lg flex items-center justify-center">
+                            <img src={GreetoIcon} alt="Greeto" className="w-8 h-8 object-contain" />
                         </div>
                         <h1 className="text-3xl font-extrabold text-white font-heading">Greeto AI</h1>
                     </div>
@@ -87,15 +89,25 @@ export default function Login() {
                         <label className="block text-sm font-medium text-[var(--color-text-light)] mb-2">
                             Password
                         </label>
-                        <input
-                            type="password"
-                            placeholder="••••••••"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            onKeyPress={handleKeyPress}
-                            disabled={isLoading}
-                            className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-[var(--color-text-light)]/40 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                        />
+                        <div className="relative">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                placeholder="••••••••"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                onKeyPress={handleKeyPress}
+                                disabled={isLoading}
+                                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-[var(--color-text-light)]/40 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                disabled={isLoading}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none bg-transparent border-0 p-0"
+                            >
+                                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                            </button>
+                        </div>
                     </div>
 
                     {/* Sign In Button */}
@@ -116,15 +128,15 @@ export default function Login() {
 
                     {/* Footer */}
                     <div className="mt-6 pt-6 border-t border-white/10 text-center">
-                        <p className="text-[var(--color-text-light)]/60 text-xs">
+                        <p className="text-white/80 text-xs font-medium">
                             © 2026 Greeto AI. All rights reserved.
                         </p>
                     </div>
                 </div>
 
                 {/* Help Text */}
-                <div className="mt-6 text-center text-[var(--color-text-light)]/50 text-sm">
-                    <p>Need help? Contact support@greeto.ai</p>
+                <div className="mt-6 text-center text-white/70 text-sm font-medium">
+                    <p>Need help? <a href="mailto:support@greeto.ai" className="text-[var(--color-primary)] hover:underline">Contact support@greeto.ai</a></p>
                 </div>
             </div>
         </div>
