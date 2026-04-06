@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { clientApi } from '../../api';
 import StatCard from '../../components/StatCard';
-import Icon from '../../components/Icon';
 import type { StatCardProps } from '../../types';
 import {
   ResponsiveContainer,
@@ -284,9 +283,9 @@ const Analytics: React.FC = () => {
                     outerRadius={95}
                     paddingAngle={3}
                     dataKey="value"
-                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    label={({ name, percent }: any) => `${name || ''} ${((percent || 0) * 100).toFixed(0)}%`}
                   >
-                    {leadStatusData.map((entry, index) => (
+                    {leadStatusData.map((_, index) => (
                       <Cell key={index} fill={PIE_COLORS[index % PIE_COLORS.length]} />
                     ))}
                   </Pie>
