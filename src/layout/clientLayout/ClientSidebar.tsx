@@ -24,16 +24,6 @@ interface SubscriptionData {
     is_trial: boolean;
 }
 
-interface BillingPlan {
-    limits: {
-        messages_per_month?: number;
-    };
-}
-
-interface UsageData {
-    messages_used_this_month?: number;
-}
-
 const navSections: NavSection[] = [
     {
         title: "MAIN",
@@ -66,7 +56,6 @@ export default function ClientSidebar() {
     const location = useLocation();
     const { userRole, signOut } = useAuth();
     const [subscription, setSubscription] = useState<SubscriptionData | null>(null);
-    const [billingPlan, setBillingPlan] = useState<BillingPlan | null>(null);
     const [messagesUsed, setMessagesUsed] = useState(0);
     const [messagesLimit, setMessagesLimit] = useState(0);
     const [clientId, setClientId] = useState<number | null>(null);
@@ -131,7 +120,6 @@ export default function ClientSidebar() {
             if (subscription?.plan) {
                 const planCode = subscription.plan.toLowerCase().replace(/\s+/g, '_');
                 const planData = await publicApi.getBillingPlanByCode(planCode);
-                setBillingPlan(planData);
                 setMessagesLimit(planData.limits?.messages_per_month || 0);
             }
         } catch (err) {

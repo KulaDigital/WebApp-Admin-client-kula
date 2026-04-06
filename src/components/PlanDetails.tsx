@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { publicApi } from '../api';
-import Icon from './Icon';
 
 interface BillingPlan {
   idx: number;

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { clientApi, publicApi } from '../../api';
-import Icon from '../../components/Icon';
 import Button from '../../components/Button';
 import PlanDetails from '../../components/PlanDetails';
 
