@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { clientApi } from '../../api';
 import { useAuth } from '../../context/AuthContext';
+import axiosInstance from '../../utils/instance';
 import StatCard from '../../components/StatCard';
 import Icon from '../../components/Icon';
+import { useNotification } from '../../components/Notification';
 import type { StatCardProps } from '../../types';
 
 interface Conversation {
@@ -28,11 +30,168 @@ interface PaginatedResponse<T> {
 const ClientDashboard: React.FC = () => {
   const navigate = useNavigate();
   const { userRole } = useAuth();
+  const { showNotification, NotificationComponent } = useNotification();
   const [stats, setStats] = useState<StatCardProps[]>([]);
   const [recentConversations, setRecentConversations] = useState<Conversation[]>([]);
   const [loading, setLoading] = useState(true);
+  const [previewLoading, setPreviewLoading] = useState(false);
 
   const userName = userRole?.userName || 'User';
+
+  const extractScriptUrl = (embedScript: string): string => {
+    const match = embedScript.match(/src="([^"]+)"/);
+    return match ? match[1] : `${import.meta.env.VITE_API_BASE_URL}/widget.js`;
+  };
+
+  const openWidgetPreview = (apiKey: string, scriptUrl: string) => {
+    const htmlContent = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat Widget Preview</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .preview-container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
+      padding: 20px;
+      max-width: 600px;
+      width: 100%;
+    }
+    .preview-header {
+      border-bottom: 2px solid #f3f4f6;
+      padding-bottom: 15px;
+      margin-bottom: 15px;
+    }
+    .preview-header h1 {
+      margin: 0;
+      font-size: 18px;
+      color: #1f2937;
+    }
+    .preview-header p {
+      margin: 5px 0 0 0;
+      font-size: 14px;
+      color: #6b7280;
+    }
+    .preview-info {
+      background: #f0f9ff;
+      border-left: 4px solid #3b82f6;
+      padding: 12px;
+      margin-bottom: 15px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #1e40af;
+    }
+    .preview-note {
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      padding: 12px;
+      margin-bottom: 15px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #92400e;
+    }
+    .widget-container {
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 15px;
+      background: #f9fafb;
+      min-height: 300px;
+    }
+  </style>
+</head>
+<body>
+  <div class="preview-container">
+    <div class="preview-header">
+      <h1>Chat Widget Preview</h1>
+      <p>Testing your chatbot widget configuration</p>
+    </div>
+    
+    <div class="preview-info">
+      ℹ️ This is a preview of your chat widget. Messages are <strong>disabled in preview mode</strong> for testing purposes.
+    </div>
+    
+    <div class="preview-note">
+      ⚠️ This tab is for previewing only. Close it when done testing.
+    </div>
+
+    <div class="widget-container">
+      <!-- Chat Widget will be injected here -->
+    </div>
+  </div>
+  
+  <script src="${scriptUrl}" data-api-key="${apiKey}" data-preview-mode="true"><\/script>
+</body>
+</html>
+    `.trim();
+
+    const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+  };
+
+  const handleOpenPreview = async () => {
+    setPreviewLoading(true);
+
+    try {
+      let clientId = userRole?.clientId;
+
+      if (!clientId) {
+        try {
+          const meResponse = await axiosInstance.get('/me');
+          clientId = meResponse.data.client_id;
+        } catch (meError) {
+          console.error('Error fetching user info:', meError);
+          showNotification('Failed to retrieve client information', 'error');
+          setPreviewLoading(false);
+          return;
+        }
+      }
+
+      if (!clientId) {
+        showNotification('Client ID not found', 'error');
+        setPreviewLoading(false);
+        return;
+      }
+
+      try {
+        const clientResponse = await axiosInstance.get(`/admin/clients/${clientId}`);
+        const clientData = clientResponse.data.client || clientResponse.data;
+        const { api_key, embed_script } = clientData;
+
+        if (!api_key) {
+          showNotification('API key not configured', 'error');
+          setPreviewLoading(false);
+          return;
+        }
+
+        const scriptUrl = embed_script ? extractScriptUrl(embed_script) : `${import.meta.env.VITE_API_BASE_URL}/widget.js`;
+        openWidgetPreview(api_key, scriptUrl);
+        showNotification('Widget preview opened in a new tab', 'success');
+      } catch (clientError: any) {
+        console.error('Error fetching client data:', clientError);
+        const errorMessage = clientError?.response?.data?.message || 'Failed to fetch client configuration';
+        showNotification(errorMessage, 'error');
+      }
+    } catch (generalError: any) {
+      console.error('Unexpected error:', generalError);
+      showNotification('An unexpected error occurred', 'error');
+    } finally {
+      setPreviewLoading(false);
+    }
+  };
 
   const quickActions = [
     { icon: 'chat', label: 'View All Conversations', description: 'Browse all chatbot conversations', path: '/client/conversations' },
@@ -259,6 +418,27 @@ const ClientDashboard: React.FC = () => {
       <div>
         <h2 className="text-h2 text-[var(--color-text-primary)] mb-4">Quick Actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Widget Preview Card */}
+          <div
+            onClick={handleOpenPreview}
+            className={`card p-5 cursor-pointer group hover:shadow-lg transition-all ${
+              previewLoading ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''
+            }`}
+          >
+            <div
+              className="w-10 h-10 rounded-lg flex items-center justify-center mb-3 group-hover:scale-110"
+              style={{
+                background: 'var(--color-primary-light)',
+                transition: 'transform var(--transition-base)',
+              }}
+            >
+              <Icon name="chatbot" size="md" decorative />
+            </div>
+            <h3 className="font-bold text-[var(--color-text-primary)] text-sm mb-1">Preview Chat Widget</h3>
+            <p className="text-xs text-[var(--color-text-secondary)]">See how your widget appears on your website</p>
+          </div>
+
+          {/* Navigation Actions */}
           {quickActions.map((action, index) => (
             <div
               key={index}
@@ -280,6 +460,9 @@ const ClientDashboard: React.FC = () => {
           ))}
         </div>
       </div>
+
+      {/* Notification component */}
+      {NotificationComponent}
     </div>
   );
 };

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../utils/instance';
 import FormPosition from '../../components/FormPosition';
+import WidgetPreviewButton from '../../components/WidgetPreviewButton';
 
 interface WidgetConfig {
   primaryColor: string;
@@ -355,6 +356,27 @@ const ChatbotConfiguration: React.FC = () => {
                 </div>
               </div>
             )}
+
+            {/* Widget Preview Section */}
+            <div className="bg-white border border-[var(--color-border)] rounded-lg p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-bold text-text-primary font-heading mb-2">
+                    Preview Your Widget
+                  </h2>
+                  <p className="text-sm text-text-secondary">
+                    See how your chat widget will appear on your website with the current configuration
+                  </p>
+                </div>
+                <div className="flex-shrink-0 ml-6">
+                  <WidgetPreviewButton 
+                    size="md" 
+                    buttonLabel="Preview" 
+                    className="whitespace-nowrap"
+                  />
+                </div>
+              </div>
+            </div>
 
             {/* Save Button */}
             <div className="flex gap-3 pt-4">
