@@ -125,3 +125,17 @@ export interface SettingsState {
   webhookUrl: string;
   apiKey: string;
 }
+
+// Widget Preview Data
+export interface WidgetConfig {
+  primaryColor?: string;
+  secondaryColor?: string;
+  position?: 'bottom-right' | 'bottom-left';
+  welcomeMessage?: string;
+}
+
+export interface WidgetPreviewData {
+  api_key: string;
+  website_url: string;
+  widget_config?: WidgetConfig;
+}
