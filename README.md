@@ -79,6 +79,10 @@ This project implements a comprehensive admin and client management system with:
 
 ### Client Portal
 - ✅ Dashboard with knowledge base statistics & subscription display ⭐ ENHANCED
+  - **Chat Widget Preview** - Click to preview widget in new tab with preview mode enabled
+  - Quick Actions grid for common tasks (Preview Widget, View Conversations, Test Chatbot, Manage Leads, Analytics)
+  - Real-time conversation and lead statistics
+  - Subscription status overview
 - ✅ Chatbot widget configuration with embed script & integration guide ⭐ ENHANCED
 - ✅ Web scraper management with rescraping
 - ✅ Conversation history viewer with pagination
@@ -233,6 +237,18 @@ src/
 
 **🎉 ENHANCED: ClientDashboard** ⭐
 - Added subscription information display
+- **Chat Widget Preview Feature:**
+  - Interactive "Preview Chat Widget" card in Quick Actions
+  - Click card to preview widget in a new browser tab
+  - Preview mode disabled message sending for testing
+  - Automatically fetches widget configuration from API
+  - Extracts widget script URL from embed_script field
+  - Error handling for missing API keys or configuration
+- **Unified Quick Actions Design:**
+  - All Quick Action cards have consistent structure (icon, title, description)
+  - No internal buttons - entire cards are clickable
+  - Consistent styling and hover effects across all actions
+  - Easy to extend with additional quick actions
 - **Features:**
   - Subscription plan badge (Professional, Business, Enterprise)
   - Trial status indicator
